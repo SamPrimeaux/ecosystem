@@ -1104,6 +1104,10 @@
         // --- 2. Render Functions ---
         function renderModules() {
             const grid = document.getElementById('optionsGrid');
+            if (!grid) {
+                console.warn('renderModules: optionsGrid not found');
+                return;
+            }
             grid.innerHTML = modules.map(mod => `
                 <div class="group flex flex-col items-center gap-3 cursor-pointer interactable" onclick="console.log('Launch ${mod.code}')">
                     <div class="w-20 h-20 rounded-[22px] glass-icon flex items-center justify-center relative overflow-hidden">
@@ -1123,6 +1127,10 @@
         // --- 3. Three.js Galaxy Hero Engine ---
         function initGalaxy() {
             const container = document.getElementById('canvas-container');
+            if (!container || typeof THREE === 'undefined') {
+                console.warn('Galaxy: container or THREE.js not found');
+                return;
+            }
             const scene = new THREE.Scene();
 
             // Fog for depth
@@ -1275,6 +1283,10 @@
         function initCursor() {
             const dot = document.getElementById('cursor-dot');
             const outline = document.getElementById('cursor-outline');
+            if (!dot || !outline) {
+                console.warn('Cursor: elements not found');
+                return;
+            }
 
             window.addEventListener('mousemove', (e) => {
                 const posX = e.clientX;
@@ -1407,9 +1419,11 @@
         }
 
         function renderHTML() {
-            const code = document.getElementById('htmlCode').value;
+            const codeEl = document.getElementById('htmlCode');
             const preview = document.getElementById('htmlPreview');
-            preview.srcdoc = code;
+            if (codeEl && preview) {
+                preview.srcdoc = codeEl.value;
+            }
         }
 
         function saveHTMLToR2() {
@@ -1429,7 +1443,8 @@
         function loadTheme() {
             const savedTheme = localStorage.getItem('meauxos-theme') || 'dark';
             applyTheme(savedTheme);
-            document.querySelector(`input[name="theme"][value="${savedTheme}"]`).checked = true;
+            const themeInput = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
+            if (themeInput) themeInput.checked = true;
         }
 
         function applyTheme(theme) {
@@ -1566,35 +1581,49 @@
         }
 
         // --- 7. Initialization ---
-        window.addEventListener('DOMContentLoaded', () => {
-            loadTheme(); // Load saved theme
-            renderModules();
-            initGalaxy();
-            initCursor();
-            initRouting();
-            renderHTML(); // Auto-render HTML preview
+        function initApp() {
+            try {
+                loadTheme(); // Load saved theme
+                renderModules();
+                initGalaxy();
+                initCursor();
+                initRouting();
+                renderHTML(); // Auto-render HTML preview
 
-            // Sidenav Toggles
-            const sidenav = document.getElementById('sidenav');
-            const overlay = document.getElementById('mobileOverlay');
-            function toggleMenu() {
-                const closed = sidenav.classList.contains('-translate-x-full');
-                closed ? sidenav.classList.remove('-translate-x-full') : sidenav.classList.add('-translate-x-full');
-                closed ? overlay.classList.remove('hidden') : setTimeout(() => overlay.classList.add('hidden'), 300);
-                if (closed) setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-                else overlay.classList.add('opacity-0');
-            }
-            document.getElementById('mobileMenuBtn').addEventListener('click', toggleMenu);
-            document.getElementById('closeSidebar').addEventListener('click', toggleMenu);
-            overlay.addEventListener('click', toggleMenu);
+                // Sidenav Toggles
+                const sidenav = document.getElementById('sidenav');
+                const overlay = document.getElementById('mobileOverlay');
+                function toggleMenu() {
+                    const closed = sidenav.classList.contains('-translate-x-full');
+                    closed ? sidenav.classList.remove('-translate-x-full') : sidenav.classList.add('-translate-x-full');
+                    closed ? overlay.classList.remove('hidden') : setTimeout(() => overlay.classList.add('hidden'), 300);
+                    if (closed) setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                    else overlay.classList.add('opacity-0');
+                }
+                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                const closeSidebar = document.getElementById('closeSidebar');
+                if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMenu);
+                if (closeSidebar) closeSidebar.addEventListener('click', toggleMenu);
+                if (overlay) overlay.addEventListener('click', toggleMenu);
 
-            // Remove Loader
-            setTimeout(() => {
+                // Remove Loader
+                setTimeout(() => {
+                    const loader = document.getElementById('loader');
+                    if (loader) {
+                        loader.style.opacity = '0';
+                        setTimeout(() => loader.remove(), 600);
+                    }
+                }, 800);
+            } catch (e) {
+                console.error('Init error:', e);
+                // Remove loader even on error
                 const loader = document.getElementById('loader');
-                loader.style.opacity = '0';
-                setTimeout(() => loader.remove(), 600);
-            }, 1000);
-        });
+                if (loader) loader.remove();
+            }
+        }
+
+        // Run immediately since script is at bottom of body (DOM already loaded)
+        initApp();
     </script>
 </body>
 
