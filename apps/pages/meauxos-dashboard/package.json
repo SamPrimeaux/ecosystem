@@ -1,0 +1,24 @@
+{
+  "name": "@meauxos/dashboard",
+  "version": "3.0.0",
+  "private": true,
+  "description": "MeauxOS Unified Operations Dashboard",
+  "scripts": {
+    "dev": "wrangler pages dev ./src --port 3000",
+    "build": "echo 'Static HTML - no build required'",
+    "deploy": "wrangler pages deploy ./src --project-name meauxos-dashboard",
+    "preview": "npx serve ./src -l 3000"
+  },
+  "keywords": [
+    "meauxos",
+    "dashboard",
+    "cloudflare",
+    "pages"
+  ],
+  "author": "Meauxbility Foundation",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "wrangler": "^3.0.0",
+    "serve": "^14.0.0"
+  }
+}

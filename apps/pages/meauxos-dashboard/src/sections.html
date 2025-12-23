@@ -1,0 +1,933 @@
+<!-- ========================================== -->
+<!-- MeauxOS Dashboard Sections               -->
+<!-- These sections are injected into the     -->
+<!-- main dashboard after devops-section      -->
+<!-- ========================================== -->
+
+<!-- MeauxWork Section - Project Management -->
+<section id="meauxwork-section" class="page-section hidden">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-2">MeauxWork</h2>
+            <p class="text-slate-400">Project overview and task management</p>
+        </div>
+        <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white text-sm font-semibold shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all interactable">
+            + New Project
+        </button>
+    </div>
+
+    <!-- Kanban Board -->
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <!-- Backlog Column -->
+        <div class="hero-glass rounded-2xl p-4 border border-white/5">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-slate-500"></span>
+                    Backlog
+                </h3>
+                <span class="text-xs text-slate-500 bg-slate-800 px-2 py-1 rounded-full">12</span>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-slate-800/50 rounded-xl p-3 border border-white/5 cursor-pointer hover:border-meaux-cyan/30 transition-colors interactable">
+                    <div class="text-sm font-medium text-white mb-2">Dashboard Redesign</div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">Design</span>
+                        <span class="text-[10px] text-slate-500">MX-001</span>
+                    </div>
+                </div>
+                <div class="bg-slate-800/50 rounded-xl p-3 border border-white/5 cursor-pointer hover:border-meaux-cyan/30 transition-colors interactable">
+                    <div class="text-sm font-medium text-white mb-2">API Integration</div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">Backend</span>
+                        <span class="text-[10px] text-slate-500">MX-002</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- In Progress Column -->
+        <div class="hero-glass rounded-2xl p-4 border border-meaux-cyan/20">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-meaux-cyan animate-pulse"></span>
+                    In Progress
+                </h3>
+                <span class="text-xs text-meaux-cyan bg-meaux-cyan/10 px-2 py-1 rounded-full">5</span>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-slate-800/50 rounded-xl p-3 border border-meaux-cyan/20 cursor-pointer hover:border-meaux-cyan/50 transition-colors interactable">
+                    <div class="text-sm font-medium text-white mb-2">MeauxOS v2 Launch</div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">Feature</span>
+                        <span class="text-[10px] text-slate-500">MX-003</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-meaux-cyan to-meaux-blue rounded-full" style="width: 65%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Column -->
+        <div class="hero-glass rounded-2xl p-4 border border-white/5">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                    Review
+                </h3>
+                <span class="text-xs text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">3</span>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-slate-800/50 rounded-xl p-3 border border-white/5 cursor-pointer hover:border-amber-500/30 transition-colors interactable">
+                    <div class="text-sm font-medium text-white mb-2">Auth System Refactor</div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400">Security</span>
+                        <span class="text-[10px] text-slate-500">MX-004</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Done Column -->
+        <div class="hero-glass rounded-2xl p-4 border border-white/5">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                    Done
+                </h3>
+                <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">28</span>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-slate-800/50 rounded-xl p-3 border border-emerald-500/20 opacity-75 cursor-pointer interactable">
+                    <div class="text-sm font-medium text-slate-400 mb-2 line-through">CI/CD Pipeline</div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-400">DevOps</span>
+                        <span class="text-[10px] text-slate-500">MX-005</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MeauxStats Section - Analytics Dashboard -->
+<section id="meauxstats-section" class="page-section hidden">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-2">MeauxStats</h2>
+            <p class="text-slate-400">Real-time analytics and metrics</p>
+        </div>
+        <select class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-white text-sm focus:outline-none focus:border-meaux-cyan/50 interactable">
+            <option>Last 7 days</option>
+            <option>Last 30 days</option>
+            <option>Last 90 days</option>
+            <option>All time</option>
+        </select>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-meaux-cyan/20 to-meaux-blue/20 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-meaux-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                    </svg>
+                </div>
+                <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">+12%</span>
+            </div>
+            <div class="text-3xl font-bold text-white mb-1">1,247</div>
+            <div class="text-sm text-slate-400">Total Users</div>
+        </div>
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400/20 to-emerald-600/20 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                </div>
+                <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">+28%</span>
+            </div>
+            <div class="text-3xl font-bold text-white mb-1">89.2K</div>
+            <div class="text-sm text-slate-400">API Requests</div>
+        </div>
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-400/20 to-violet-600/20 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
+                    </svg>
+                </div>
+                <span class="text-xs text-meaux-cyan bg-meaux-cyan/10 px-2 py-1 rounded-full">114</span>
+            </div>
+            <div class="text-3xl font-bold text-white mb-1">114</div>
+            <div class="text-sm text-slate-400">Active Workers</div>
+        </div>
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/20 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                    </svg>
+                </div>
+                <span class="text-xs text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">77</span>
+            </div>
+            <div class="text-3xl font-bold text-white mb-1">2.4 TB</div>
+            <div class="text-sm text-slate-400">R2 Storage</div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <h3 class="text-lg font-semibold text-white mb-4">Traffic Overview</h3>
+            <div class="h-64 flex items-end justify-around gap-2">
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-8 bg-gradient-to-t from-meaux-cyan to-meaux-blue rounded-t-lg" style="height: 40%"></div>
+                    <span class="text-xs text-slate-500">Mon</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-8 bg-gradient-to-t from-meaux-cyan to-meaux-blue rounded-t-lg" style="height: 65%"></div>
+                    <span class="text-xs text-slate-500">Tue</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-8 bg-gradient-to-t from-meaux-cyan to-meaux-blue rounded-t-lg" style="height: 85%"></div>
+                    <span class="text-xs text-slate-500">Wed</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-8 bg-gradient-to-t from-meaux-cyan to-meaux-blue rounded-t-lg" style="height: 70%"></div>
+                    <span class="text-xs text-slate-500">Thu</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-8 bg-gradient-to-t from-meaux-cyan to-meaux-blue rounded-t-lg" style="height: 90%"></div>
+                    <span class="text-xs text-slate-500">Fri</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-8 bg-gradient-to-t from-meaux-cyan to-meaux-blue rounded-t-lg opacity-50" style="height: 45%"></div>
+                    <span class="text-xs text-slate-500">Sat</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-8 bg-gradient-to-t from-meaux-cyan to-meaux-blue rounded-t-lg opacity-50" style="height: 35%"></div>
+                    <span class="text-xs text-slate-500">Sun</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <h3 class="text-lg font-semibold text-white mb-4">Resource Distribution</h3>
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-slate-400">Workers</span>
+                        <span class="text-white">114</span>
+                    </div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-meaux-cyan to-meaux-blue rounded-full" style="width: 75%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-slate-400">Pages</span>
+                        <span class="text-white">10</span>
+                    </div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-violet-400 to-violet-600 rounded-full" style="width: 25%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-slate-400">D1 Databases</span>
+                        <span class="text-white">20</span>
+                    </div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-amber-400 to-amber-600 rounded-full" style="width: 45%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-slate-400">R2 Buckets</span>
+                        <span class="text-white">77</span>
+                    </div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full" style="width: 85%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MeauxTeam Section - Team Portfolio -->
+<section id="meauxteam-section" class="page-section hidden">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-2">MeauxTeam</h2>
+            <p class="text-slate-400">Team portfolio and collaboration</p>
+        </div>
+        <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-semibold shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 transition-all interactable">
+            + Invite Member
+        </button>
+    </div>
+
+    <!-- Team Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="hero-glass rounded-2xl p-6 border border-white/5 hover:border-meaux-cyan/30 transition-colors interactable">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-meaux-cyan to-meaux-blue flex items-center justify-center text-white text-2xl font-bold">
+                    SP
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white">Sam Primeaux</h3>
+                    <p class="text-sm text-meaux-cyan">Founder & Lead Developer</p>
+                    <div class="flex gap-2 mt-2">
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">Active</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+                <span class="text-xs px-2 py-1 rounded-lg bg-slate-800 text-slate-400">TypeScript</span>
+                <span class="text-xs px-2 py-1 rounded-lg bg-slate-800 text-slate-400">React</span>
+                <span class="text-xs px-2 py-1 rounded-lg bg-slate-800 text-slate-400">Cloudflare</span>
+                <span class="text-xs px-2 py-1 rounded-lg bg-slate-800 text-slate-400">AI/ML</span>
+            </div>
+        </div>
+
+        <!-- Add more team member cards as needed -->
+        <div class="hero-glass rounded-2xl p-6 border border-dashed border-white/10 flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-meaux-cyan/30 transition-colors interactable min-h-[200px]">
+            <div class="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center">
+                <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </div>
+            <p class="text-sm text-slate-500">Add Team Member</p>
+        </div>
+    </div>
+</section>
+
+<!-- MeauxDOC Section - Document Storage -->
+<section id="meauxdoc-section" class="page-section hidden">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-2">MeauxDOC</h2>
+            <p class="text-slate-400">Document storage and management</p>
+        </div>
+        <div class="flex gap-3">
+            <button class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-white text-sm font-semibold hover:bg-slate-700/50 transition-colors interactable">
+                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+                New Folder
+            </button>
+            <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-700 text-white text-sm font-semibold shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all interactable">
+                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                Upload
+            </button>
+        </div>
+    </div>
+
+    <!-- File Browser -->
+    <div class="hero-glass rounded-2xl border border-white/5 overflow-hidden">
+        <div class="p-4 border-b border-white/5 flex items-center gap-2 text-sm">
+            <span class="text-meaux-cyan">📁</span>
+            <span class="text-slate-400">/</span>
+            <span class="text-white">Documents</span>
+        </div>
+        <div class="divide-y divide-white/5">
+            <div class="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer interactable">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                        <span class="text-lg">📁</span>
+                    </div>
+                    <div>
+                        <div class="text-white font-medium">Projects</div>
+                        <div class="text-xs text-slate-500">12 items</div>
+                    </div>
+                </div>
+                <span class="text-xs text-slate-500">Modified 2 hours ago</span>
+            </div>
+            <div class="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer interactable">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                        <span class="text-lg">📄</span>
+                    </div>
+                    <div>
+                        <div class="text-white font-medium">Architecture.md</div>
+                        <div class="text-xs text-slate-500">24 KB</div>
+                    </div>
+                </div>
+                <span class="text-xs text-slate-500">Modified yesterday</span>
+            </div>
+            <div class="p-4 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer interactable">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                        <span class="text-lg">📊</span>
+                    </div>
+                    <div>
+                        <div class="text-white font-medium">Q4_Report.xlsx</div>
+                        <div class="text-xs text-slate-500">156 KB</div>
+                    </div>
+                </div>
+                <span class="text-xs text-slate-500">Modified 3 days ago</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MeauxPHOTO Section - Photo Editing -->
+<section id="meauxphoto-section" class="page-section hidden">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-2">MeauxPHOTO</h2>
+            <p class="text-slate-400">Photo editing studio</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Tools Panel -->
+        <div class="hero-glass rounded-2xl p-4 border border-white/5">
+            <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Tools</h3>
+            <div class="grid grid-cols-3 gap-2">
+                <button class="p-3 rounded-xl bg-meaux-cyan/10 border border-meaux-cyan/30 text-meaux-cyan hover:bg-meaux-cyan/20 transition-colors interactable">
+                    <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                </button>
+                <button class="p-3 rounded-xl bg-slate-800/50 border border-white/5 text-slate-400 hover:bg-slate-700/50 transition-colors interactable">
+                    <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </button>
+                <button class="p-3 rounded-xl bg-slate-800/50 border border-white/5 text-slate-400 hover:bg-slate-700/50 transition-colors interactable">
+                    <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4 4 4 0 004-4V5z" />
+                    </svg>
+                </button>
+            </div>
+            <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mt-6 mb-4">Adjustments</h3>
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between text-xs text-slate-400 mb-2">
+                        <span>Brightness</span>
+                        <span>0</span>
+                    </div>
+                    <input type="range" class="w-full accent-meaux-cyan" min="-100" max="100" value="0">
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs text-slate-400 mb-2">
+                        <span>Contrast</span>
+                        <span>0</span>
+                    </div>
+                    <input type="range" class="w-full accent-meaux-cyan" min="-100" max="100" value="0">
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs text-slate-400 mb-2">
+                        <span>Saturation</span>
+                        <span>0</span>
+                    </div>
+                    <input type="range" class="w-full accent-meaux-cyan" min="-100" max="100" value="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="lg:col-span-3 hero-glass rounded-2xl p-6 border border-white/5 flex items-center justify-center min-h-[500px]">
+            <div class="text-center">
+                <div class="w-24 h-24 mx-auto mb-4 rounded-2xl bg-slate-800/50 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <p class="text-slate-400 mb-4">Drop an image here or click to upload</p>
+                <button class="px-6 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-pink-700 text-white text-sm font-semibold shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 transition-all interactable">
+                    Browse Files
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MeauxMemories Section - Asset Library -->
+<section id="meauxmemories-section" class="page-section hidden">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-2">MeauxMemories</h2>
+            <p class="text-slate-400">Asset library and media gallery</p>
+        </div>
+        <div class="flex gap-3">
+            <button class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-white text-sm font-semibold hover:bg-slate-700/50 transition-colors interactable">
+                Grid View
+            </button>
+            <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-rose-700 text-white text-sm font-semibold shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 transition-all interactable">
+                + Upload
+            </button>
+        </div>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div class="aspect-square rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 cursor-pointer hover:scale-105 transition-transform interactable"></div>
+        <div class="aspect-square rounded-2xl bg-gradient-to-br from-violet-400 to-violet-600 cursor-pointer hover:scale-105 transition-transform interactable"></div>
+        <div class="aspect-square rounded-2xl bg-gradient-to-br from-meaux-cyan to-meaux-blue cursor-pointer hover:scale-105 transition-transform interactable"></div>
+        <div class="aspect-square rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 cursor-pointer hover:scale-105 transition-transform interactable"></div>
+        <div class="aspect-square rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 cursor-pointer hover:scale-105 transition-transform interactable"></div>
+        <div class="aspect-square rounded-2xl bg-gradient-to-br from-pink-400 to-pink-600 cursor-pointer hover:scale-105 transition-transform interactable"></div>
+        <div class="aspect-square rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-600 cursor-pointer hover:scale-105 transition-transform interactable"></div>
+        <div class="aspect-square rounded-2xl bg-gradient-to-br from-sky-400 to-sky-600 cursor-pointer hover:scale-105 transition-transform interactable"></div>
+        <div class="aspect-square rounded-2xl border-2 border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:border-meaux-cyan/30 transition-colors interactable">
+            <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+        </div>
+    </div>
+</section>
+
+<!-- MeauxMedia Section - Social Hub -->
+<section id="meauxmedia-section" class="page-section hidden">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-2">MeauxMedia</h2>
+            <p class="text-slate-400">Social media management hub</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Connected Accounts -->
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <h3 class="text-lg font-semibold text-white mb-4">Connected Accounts</h3>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/50 border border-white/5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white font-bold">IG</div>
+                        <span class="text-white">Instagram</span>
+                    </div>
+                    <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Connected</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/50 border border-white/5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">TW</div>
+                        <span class="text-white">Twitter/X</span>
+                    </div>
+                    <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Connected</span>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/50 border border-white/5 opacity-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white font-bold">YT</div>
+                        <span class="text-white">YouTube</span>
+                    </div>
+                    <button class="text-xs text-slate-400 hover:text-white transition-colors">Connect</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule -->
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <h3 class="text-lg font-semibold text-white mb-4">Scheduled Posts</h3>
+            <div class="space-y-3">
+                <div class="p-3 rounded-xl bg-slate-800/50 border border-white/5">
+                    <div class="text-sm text-white mb-1">New product launch announcement</div>
+                    <div class="text-xs text-slate-500">Tomorrow, 9:00 AM • Instagram, Twitter</div>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-800/50 border border-white/5">
+                    <div class="text-sm text-white mb-1">Weekly update thread</div>
+                    <div class="text-xs text-slate-500">Friday, 2:00 PM • Twitter</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Post -->
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <h3 class="text-lg font-semibold text-white mb-4">Quick Post</h3>
+            <textarea class="w-full h-32 p-3 rounded-xl bg-slate-800/50 border border-white/10 text-white text-sm resize-none focus:outline-none focus:border-meaux-cyan/50" placeholder="What's happening?"></textarea>
+            <div class="flex justify-between items-center mt-3">
+                <div class="flex gap-2">
+                    <button class="p-2 rounded-lg bg-slate-800/50 text-slate-400 hover:text-white transition-colors interactable">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </button>
+                    <button class="p-2 rounded-lg bg-slate-800/50 text-slate-400 hover:text-white transition-colors interactable">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                </div>
+                <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-500 to-fuchsia-700 text-white text-sm font-semibold shadow-lg shadow-fuchsia-500/25 hover:shadow-fuchsia-500/40 transition-all interactable">
+                    Post
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MeauxCloud Section - Unified Storage -->
+<section id="meauxcloud-section" class="page-section hidden">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-2">MeauxCloud</h2>
+            <p class="text-slate-400">Unified cloud storage across all providers</p>
+        </div>
+    </div>
+
+    <!-- Storage Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="hero-glass rounded-2xl p-6 border border-meaux-cyan/20">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white">Cloudflare R2</h3>
+                    <p class="text-sm text-meaux-cyan">Primary Storage</p>
+                </div>
+            </div>
+            <div class="mb-2">
+                <div class="flex justify-between text-sm mb-1">
+                    <span class="text-slate-400">2.4 TB used</span>
+                    <span class="text-white">/ 10 TB</span>
+                </div>
+                <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-meaux-cyan to-meaux-blue rounded-full" style="width: 24%"></div>
+                </div>
+            </div>
+            <div class="text-xs text-slate-500">77 buckets • 279 objects</div>
+        </div>
+
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white">Supabase</h3>
+                    <p class="text-sm text-slate-400">PostgreSQL Backup</p>
+                </div>
+            </div>
+            <div class="mb-2">
+                <div class="flex justify-between text-sm mb-1">
+                    <span class="text-slate-400">500 MB used</span>
+                    <span class="text-white">/ 8 GB</span>
+                </div>
+                <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full" style="width: 6%"></div>
+                </div>
+            </div>
+            <div class="text-xs text-slate-500">209 tables • Synced</div>
+        </div>
+
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white">D1 Database</h3>
+                    <p class="text-sm text-slate-400">Edge SQLite</p>
+                </div>
+            </div>
+            <div class="mb-2">
+                <div class="flex justify-between text-sm mb-1">
+                    <span class="text-slate-400">1.2 MB used</span>
+                    <span class="text-white">/ 500 MB</span>
+                </div>
+                <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-amber-400 to-amber-600 rounded-full" style="width: 2%"></div>
+                </div>
+            </div>
+            <div class="text-xs text-slate-500">191 tables • meauxos (primary)</div>
+        </div>
+    </div>
+</section>
+
+<!-- MeauxCAD Section - 3D Design (Remastered) -->
+<section id="meauxcad-section" class="page-section hidden">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-2">MeauxCAD</h2>
+            <p class="text-slate-400">3D design studio powered by AI</p>
+        </div>
+        <div class="flex gap-3">
+            <button class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-white text-sm font-semibold hover:bg-slate-700/50 transition-colors interactable">
+                Import Model
+            </button>
+            <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-700 text-white text-sm font-semibold shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all interactable">
+                + New Design
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- AI Tools Panel -->
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">AI Generation</h3>
+            
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="text-xs text-slate-400 mb-2 block">Text to 3D</label>
+                    <div class="flex gap-2">
+                        <input type="text" class="flex-1 px-3 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-white text-sm focus:outline-none focus:border-meaux-cyan/50" placeholder="Describe your 3D model...">
+                        <button class="px-3 py-2 rounded-lg bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white text-sm font-semibold interactable">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 mb-2 block">Image to 3D</label>
+                    <div class="border-2 border-dashed border-white/10 rounded-lg p-4 text-center cursor-pointer hover:border-meaux-cyan/30 transition-colors interactable">
+                        <svg class="w-8 h-8 mx-auto mb-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="text-xs text-slate-500">Drop image here</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Integrations</h3>
+            <div class="space-y-2">
+                <button class="w-full p-3 rounded-xl bg-slate-800/50 border border-white/5 text-left hover:bg-slate-700/50 transition-colors interactable">
+                    <div class="text-sm text-white">Meshy.ai</div>
+                    <div class="text-xs text-slate-500">AI 3D Generation</div>
+                </button>
+                <button class="w-full p-3 rounded-xl bg-slate-800/50 border border-white/5 text-left hover:bg-slate-700/50 transition-colors interactable">
+                    <div class="text-sm text-white">Spline</div>
+                    <div class="text-xs text-slate-500">Real-time 3D</div>
+                </button>
+                <button class="w-full p-3 rounded-xl bg-slate-800/50 border border-white/5 text-left hover:bg-slate-700/50 transition-colors interactable">
+                    <div class="text-sm text-white">Blender</div>
+                    <div class="text-xs text-slate-500">Export to Blender</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- 3D Viewport -->
+        <div class="lg:col-span-3 hero-glass rounded-2xl border border-white/5 overflow-hidden min-h-[600px] relative">
+            <div class="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center">
+                <div class="text-center">
+                    <div class="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-400/20 to-orange-600/20 flex items-center justify-center animate-pulse">
+                        <svg class="w-16 h-16 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+                        </svg>
+                    </div>
+                    <p class="text-lg font-semibold text-white mb-2">3D Viewport Ready</p>
+                    <p class="text-sm text-slate-400">Create a new design or import an existing model</p>
+                </div>
+            </div>
+            <!-- Viewport Controls -->
+            <div class="absolute bottom-4 left-4 flex gap-2">
+                <button class="p-2 rounded-lg bg-slate-800/80 backdrop-blur text-slate-400 hover:text-white transition-colors interactable">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                    </svg>
+                </button>
+                <button class="p-2 rounded-lg bg-slate-800/80 backdrop-blur text-slate-400 hover:text-white transition-colors interactable">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                    </svg>
+                </button>
+                <button class="p-2 rounded-lg bg-slate-800/80 backdrop-blur text-slate-400 hover:text-white transition-colors interactable">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Integrations Section -->
+<section id="integrations-section" class="page-section hidden">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-2">Integrations</h2>
+            <p class="text-slate-400">Connect your favorite tools and services</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Connected -->
+        <div class="hero-glass rounded-2xl p-6 border border-emerald-500/20">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                    <span class="text-white text-xl font-bold">CF</span>
+                </div>
+                <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Connected</span>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-1">Cloudflare</h3>
+            <p class="text-sm text-slate-400 mb-4">Workers, Pages, R2, D1</p>
+            <button class="text-xs text-meaux-cyan hover:underline">Configure →</button>
+        </div>
+
+        <div class="hero-glass rounded-2xl p-6 border border-emerald-500/20">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+                    <span class="text-white text-xl font-bold">SB</span>
+                </div>
+                <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Connected</span>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-1">Supabase</h3>
+            <p class="text-sm text-slate-400 mb-4">PostgreSQL, Auth, Storage</p>
+            <button class="text-xs text-meaux-cyan hover:underline">Configure →</button>
+        </div>
+
+        <div class="hero-glass rounded-2xl p-6 border border-emerald-500/20">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center">
+                    <span class="text-white text-xl font-bold">GH</span>
+                </div>
+                <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Connected</span>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-1">GitHub</h3>
+            <p class="text-sm text-slate-400 mb-4">Repos, Actions, Deployments</p>
+            <button class="text-xs text-meaux-cyan hover:underline">Configure →</button>
+        </div>
+
+        <!-- Available -->
+        <div class="hero-glass rounded-2xl p-6 border border-white/5 opacity-75 hover:opacity-100 transition-opacity cursor-pointer interactable">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center">
+                    <span class="text-white text-xl font-bold">FG</span>
+                </div>
+                <span class="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded-full">Available</span>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-1">Figma</h3>
+            <p class="text-sm text-slate-400 mb-4">Design sync & export</p>
+            <button class="text-xs text-slate-400 hover:text-meaux-cyan">Connect →</button>
+        </div>
+
+        <div class="hero-glass rounded-2xl p-6 border border-white/5 opacity-75 hover:opacity-100 transition-opacity cursor-pointer interactable">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center">
+                    <span class="text-white text-xl font-bold">SP</span>
+                </div>
+                <span class="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded-full">Available</span>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-1">Spline</h3>
+            <p class="text-sm text-slate-400 mb-4">Real-time 3D design</p>
+            <button class="text-xs text-slate-400 hover:text-meaux-cyan">Connect →</button>
+        </div>
+
+        <div class="hero-glass rounded-2xl p-6 border border-white/5 opacity-75 hover:opacity-100 transition-opacity cursor-pointer interactable">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center">
+                    <span class="text-white text-xl font-bold">MY</span>
+                </div>
+                <span class="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded-full">Available</span>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-1">Meshy.ai</h3>
+            <p class="text-sm text-slate-400 mb-4">AI 3D model generation</p>
+            <button class="text-xs text-slate-400 hover:text-meaux-cyan">Connect →</button>
+        </div>
+    </div>
+</section>
+
+<!-- Preferences Section -->
+<section id="preferences-section" class="page-section hidden">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-white mb-2">Preferences</h2>
+            <p class="text-slate-400">Customize your MeauxOS experience</p>
+        </div>
+        <button onclick="saveSettings()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white text-sm font-semibold shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all interactable">
+            Save Changes
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Appearance -->
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <h3 class="text-lg font-semibold text-white mb-4">Appearance</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm text-slate-400 mb-2 block">Theme</label>
+                    <div class="flex gap-3">
+                        <label class="flex-1 cursor-pointer interactable">
+                            <input type="radio" name="theme" value="dark" class="sr-only peer" checked>
+                            <div class="p-4 rounded-xl bg-slate-800/50 border border-white/10 peer-checked:border-meaux-cyan peer-checked:bg-meaux-cyan/10 transition-colors text-center">
+                                <div class="w-8 h-8 mx-auto mb-2 rounded-lg bg-slate-900 border border-white/10"></div>
+                                <span class="text-sm text-white">Dark</span>
+                            </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer interactable">
+                            <input type="radio" name="theme" value="light" class="sr-only peer">
+                            <div class="p-4 rounded-xl bg-slate-800/50 border border-white/10 peer-checked:border-meaux-cyan peer-checked:bg-meaux-cyan/10 transition-colors text-center">
+                                <div class="w-8 h-8 mx-auto mb-2 rounded-lg bg-white border border-slate-200"></div>
+                                <span class="text-sm text-white">Light</span>
+                            </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer interactable">
+                            <input type="radio" name="theme" value="brand" class="sr-only peer">
+                            <div class="p-4 rounded-xl bg-slate-800/50 border border-white/10 peer-checked:border-meaux-cyan peer-checked:bg-meaux-cyan/10 transition-colors text-center">
+                                <div class="w-8 h-8 mx-auto mb-2 rounded-lg bg-gradient-to-br from-meaux-cyan to-meaux-blue"></div>
+                                <span class="text-sm text-white">Brand</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <h3 class="text-lg font-semibold text-white mb-4">Notifications</h3>
+            <div class="space-y-4">
+                <label class="flex items-center justify-between cursor-pointer interactable">
+                    <div>
+                        <div class="text-sm text-white">Email Notifications</div>
+                        <div class="text-xs text-slate-500">Receive updates via email</div>
+                    </div>
+                    <input type="checkbox" class="w-5 h-5 rounded accent-meaux-cyan" checked>
+                </label>
+                <label class="flex items-center justify-between cursor-pointer interactable">
+                    <div>
+                        <div class="text-sm text-white">Desktop Notifications</div>
+                        <div class="text-xs text-slate-500">Browser push notifications</div>
+                    </div>
+                    <input type="checkbox" class="w-5 h-5 rounded accent-meaux-cyan">
+                </label>
+                <label class="flex items-center justify-between cursor-pointer interactable">
+                    <div>
+                        <div class="text-sm text-white">Auto-save</div>
+                        <div class="text-xs text-slate-500">Automatically save changes</div>
+                    </div>
+                    <input type="checkbox" class="w-5 h-5 rounded accent-meaux-cyan" checked>
+                </label>
+            </div>
+        </div>
+
+        <!-- Account -->
+        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+            <h3 class="text-lg font-semibold text-white mb-4">Account</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm text-slate-400 mb-2 block">Email</label>
+                    <input type="email" class="w-full px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-white focus:outline-none focus:border-meaux-cyan/50" value="sam@meauxbility.org">
+                </div>
+                <div>
+                    <label class="text-sm text-slate-400 mb-2 block">Display Name</label>
+                    <input type="text" class="w-full px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-white focus:outline-none focus:border-meaux-cyan/50" value="Sam Primeaux">
+                </div>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="hero-glass rounded-2xl p-6 border border-red-500/20">
+            <h3 class="text-lg font-semibold text-red-400 mb-4">Danger Zone</h3>
+            <div class="space-y-3">
+                <button class="w-full p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium hover:bg-red-500/20 transition-colors interactable">
+                    Clear All Data
+                </button>
+                <button class="w-full p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium hover:bg-red-500/20 transition-colors interactable">
+                    Delete Account
+                </button>
+            </div>
+        </div>
+    </div>
+</section>

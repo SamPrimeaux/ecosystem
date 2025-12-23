@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeauxAccess | Unified Operations Hub</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- MeauxOS Branded Icons -->
+    <script src="/meaux-icons.js"></script>
+
+    <!-- Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        meaux: {
+                            cyan: '#00D4FF',
+                            blue: '#0077FF',
+                            purple: '#8b5cf6',
+                            pink: '#ec4899',
+                            indigo: '#6366f1',
+                        },
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glow: {
+                            'from': { boxShadow: '0 0 10px -10px #00D4FF' },
+                            'to': { boxShadow: '0 0 20px 5px #00D4FF40' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- MeauxOS Branded Icon System --- */
+        .meaux-icon {
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+            fill: currentColor;
+        }
+
+        /* Base MeauxOS "M" Icon */
+        .icon-meaux-base {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+        }
+
+        /* --- Custom Cursor --- */
+        body {
+            cursor: none;
+            /* Hide default cursor */
+        }
+
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00D4FF;
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(0, 212, 255, 0.5);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        /* Interactive State for Cursor */
+        body.hovering .cursor-outline {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(0, 212, 255, 0.05);
+            border-color: #00D4FF;
+        }
+
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        /* --- iOS Glassmorphic Icon Style --- */
+        .glass-icon {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow:
+                0 4px 24px -1px rgba(0, 0, 0, 0.2),
+                inset 0 0 12px rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .glass-icon:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow:
+                0 20px 40px -5px rgba(0, 212, 255, 0.2),
+                inset 0 0 20px rgba(0, 212, 255, 0.1);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .glass-icon svg {
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+
+        /* --- Hero Glass Card --- */
+        .hero-glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- Loader --- */
+        #loader {
+            transition: opacity 0.6s ease-out;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-slate-950 text-slate-300 font-sans antialiased overflow-hidden selection:bg-meaux-cyan selection:text-white">
+
+    <!-- Custom Cursor Elements -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <!-- Loading Screen -->
+    <div id="loader" class="fixed inset-0 bg-slate-950 z-[100] flex flex-col items-center justify-center">
+        <div class="relative w-16 h-16 mb-4">
+            <div class="absolute inset-0 border-4 border-meaux-cyan/20 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-meaux-cyan border-t-transparent rounded-full animate-spin">
+            </div>
+        </div>
+        <div class="text-sm font-mono text-meaux-cyan tracking-[0.2em] uppercase animate-pulse">Initializing MeauxOS
+        </div>
+    </div>
+
+    <div class="flex h-screen w-full relative">
+
+        <!-- Mobile Overlay -->
+        <div id="mobileOverlay"
+            class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 hidden transition-opacity duration-300 opacity-0">
+        </div>
+
+        <!-- Sidebar (MeauxAccess Nav) -->
+        <aside id="sidenav"
+            class="fixed lg:static inset-y-0 left-0 z-50 w-[280px] bg-slate-900/90 backdrop-blur-xl border-r border-slate-800 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+
+            <!-- Logo -->
+            <div class="h-20 flex items-center justify-between px-6 border-b border-slate-800/50">
+                <a href="#" class="flex items-center gap-3 group interactable">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-meaux-cyan to-meaux-blue flex items-center justify-center text-white shadow-lg shadow-meaux-cyan/20">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-4 0-7-3-7-7V8.3l7-3.11 7 3.11V13c0 4-3 7-7 7z"
+                                fill="currentColor" opacity="0.9" />
+                            <text x="12" y="16" font-family="Inter, sans-serif" font-weight="800" font-size="10"
+                                text-anchor="middle" fill="white">M</text>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-white tracking-tight text-xl">Meaux<span
+                            class="text-meaux-cyan">OS</span></span>
+                </a>
+                <button id="closeSidebar" class="lg:hidden text-slate-400 hover:text-white interactable">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Links -->
+            <div class="flex-1 overflow-y-auto py-6 px-4 space-y-8">
+
+                <!-- Core Modules -->
+                <div class="space-y-1">
+                    <h3 class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">Core Modules
+                    </h3>
+                    <nav class="space-y-1">
+                        <a href="#dashboard"
+                            class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg bg-meaux-cyan/10 text-meaux-cyan border border-meaux-cyan/10 interactable">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="8" height="8" rx="1" fill="currentColor" opacity="0.2" />
+                                <rect x="13" y="3" width="8" height="8" rx="1" fill="currentColor" opacity="0.2" />
+                                <rect x="3" y="13" width="8" height="8" rx="1" fill="currentColor" opacity="0.2" />
+                                <rect x="13" y="13" width="8" height="8" rx="1" fill="currentColor" opacity="0.2" />
+                                <text x="7" y="9.5" font-family="Inter, sans-serif" font-weight="800" font-size="5"
+                                    text-anchor="middle" fill="currentColor">M</text><text x="17" y="9.5"
+                                    font-family="Inter, sans-serif" font-weight="800" font-size="5" text-anchor="middle"
+                                    fill="currentColor">M</text><text x="7" y="19.5" font-family="Inter, sans-serif"
+                                    font-weight="800" font-size="5" text-anchor="middle"
+                                    fill="currentColor">M</text><text x="17" y="19.5" font-family="Inter, sans-serif"
+                                    font-weight="800" font-size="5" text-anchor="middle" fill="currentColor">M</text>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="#meauxwork"
+                            class="group flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 group-hover:text-meaux-cyan transition-colors" fill="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <rect x="2" y="4" width="6" height="16" rx="1" fill="currentColor" opacity="0.15" />
+                                    <rect x="9" y="4" width="6" height="16" rx="1" fill="currentColor" opacity="0.15" />
+                                    <rect x="16" y="4" width="6" height="16" rx="1" fill="currentColor"
+                                        opacity="0.15" /><text x="5" y="13" font-family="Inter, sans-serif"
+                                        font-weight="800" font-size="6" text-anchor="middle"
+                                        fill="currentColor">M</text><text x="12" y="13" font-family="Inter, sans-serif"
+                                        font-weight="800" font-size="6" text-anchor="middle"
+                                        fill="currentColor">M</text><text x="19" y="13" font-family="Inter, sans-serif"
+                                        font-weight="800" font-size="6" text-anchor="middle"
+                                        fill="currentColor">M</text>
+                                </svg>
+                                MeauxWork
+                            </div>
+                            <span
+                                class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-300 group-hover:bg-meaux-cyan/20 group-hover:text-meaux-cyan">24</span>
+                        </a>
+                        <a href="#meauxstats"
+                            class="group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <svg class="w-5 h-5 group-hover:text-meaux-cyan transition-colors" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <rect x="3" y="18" width="3" height="4" rx="0.5" fill="currentColor" opacity="0.6" />
+                                <rect x="7" y="14" width="3" height="8" rx="0.5" fill="currentColor" opacity="0.6" />
+                                <rect x="11" y="10" width="3" height="12" rx="0.5" fill="currentColor" opacity="0.6" />
+                                <rect x="15" y="6" width="3" height="16" rx="0.5" fill="currentColor" opacity="0.6" />
+                                <text x="4.5" y="20" font-family="Inter, sans-serif" font-weight="800" font-size="3"
+                                    text-anchor="middle" fill="currentColor">M</text><text x="8.5" y="18"
+                                    font-family="Inter, sans-serif" font-weight="800" font-size="3" text-anchor="middle"
+                                    fill="currentColor">M</text><text x="12.5" y="14" font-family="Inter, sans-serif"
+                                    font-weight="800" font-size="3" text-anchor="middle"
+                                    fill="currentColor">M</text><text x="16.5" y="10" font-family="Inter, sans-serif"
+                                    font-weight="800" font-size="3" text-anchor="middle" fill="currentColor">M</text>
+                            </svg>
+                            Analytics
+                        </a>
+                        <a href="#meauxteam"
+                            class="group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <svg class="w-5 h-5 group-hover:text-meaux-cyan transition-colors" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <circle cx="9" cy="7" r="4" fill="currentColor" opacity="0.2" />
+                                <circle cx="15" cy="7" r="4" fill="currentColor" opacity="0.2" />
+                                <path d="M3 21c0-2.5 2-4.5 6-4.5s6 2 6 4.5" fill="currentColor" opacity="0.2" />
+                                <path d="M15 21c0-2.5 2-4.5 6-4.5s6 2 6 4.5" fill="currentColor" opacity="0.2" /><text
+                                    x="9" y="9" font-family="Inter, sans-serif" font-weight="800" font-size="4"
+                                    text-anchor="middle" fill="currentColor">M</text><text x="15" y="9"
+                                    font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle"
+                                    fill="currentColor">M</text>
+                            </svg>
+                            Team
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Content & Media -->
+                <div class="space-y-1">
+                    <h3 class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">Content & Media
+                    </h3>
+                    <nav class="space-y-1">
+                        <a href="#meauxdoc"
+                            class="group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <svg class="w-5 h-5 group-hover:text-meaux-purple transition-colors" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"
+                                    fill="currentColor" opacity="0.15" />
+                                <path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5" /><text x="12" y="15"
+                                    font-family="Inter, sans-serif" font-weight="800" font-size="8" text-anchor="middle"
+                                    fill="currentColor">M</text>
+                            </svg>
+                            Documents
+                        </a>
+                        <a href="#meauxphoto"
+                            class="group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <svg class="w-5 h-5 group-hover:text-meaux-purple transition-colors" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" opacity="0.15" />
+                                <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" opacity="0.4" />
+                                <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.5" /><text x="12"
+                                    y="14" font-family="Inter, sans-serif" font-weight="800" font-size="7"
+                                    text-anchor="middle" fill="currentColor">M</text>
+                            </svg>
+                            Photos
+                        </a>
+                        <a href="#meauxmemories"
+                            class="group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <svg class="w-5 h-5 group-hover:text-meaux-purple transition-colors" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="7" height="7" rx="1" fill="currentColor" opacity="0.15" />
+                                <rect x="14" y="3" width="7" height="7" rx="1" fill="currentColor" opacity="0.15" />
+                                <rect x="3" y="14" width="7" height="7" rx="1" fill="currentColor" opacity="0.15" />
+                                <rect x="14" y="14" width="7" height="7" rx="1" fill="currentColor" opacity="0.15" />
+                                <text x="6.5" y="7.5" font-family="Inter, sans-serif" font-weight="800" font-size="4"
+                                    text-anchor="middle" fill="currentColor">M</text><text x="17.5" y="7.5"
+                                    font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle"
+                                    fill="currentColor">M</text><text x="6.5" y="18.5" font-family="Inter, sans-serif"
+                                    font-weight="800" font-size="4" text-anchor="middle"
+                                    fill="currentColor">M</text><text x="17.5" y="18.5" font-family="Inter, sans-serif"
+                                    font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text>
+                            </svg>
+                            Gallery
+                        </a>
+                        <a href="#meauxmedia"
+                            class="group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <svg class="w-5 h-5 group-hover:text-meaux-purple transition-colors" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <rect x="3" y="5" width="18" height="14" rx="2" fill="currentColor" opacity="0.15" />
+                                <polygon points="9,9 9,15 15,12" fill="currentColor" opacity="0.6" /><text x="12" y="19"
+                                    font-family="Inter, sans-serif" font-weight="800" font-size="5" text-anchor="middle"
+                                    fill="currentColor">M</text>
+                            </svg>
+                            Media
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Infrastructure -->
+                <div class="space-y-1">
+                    <h3 class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">Infrastructure
+                    </h3>
+                    <nav class="space-y-1">
+                        <a href="#meauxcloud"
+                            class="group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <svg class="w-5 h-5 group-hover:text-meaux-cyan transition-colors" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" fill="currentColor"
+                                    opacity="0.2" /><text x="12" y="16" font-family="Inter, sans-serif"
+                                    font-weight="800" font-size="7" text-anchor="middle" fill="currentColor">M</text>
+                            </svg>
+                            Cloud
+                        </a>
+                        <a href="#meauxcad"
+                            class="group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <svg class="w-5 h-5 group-hover:text-meaux-cyan transition-colors" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" opacity="0.1" />
+                                <line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="1.5" />
+                                <line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="1.5" /><text
+                                    x="12" y="15" font-family="Inter, sans-serif" font-weight="800" font-size="6"
+                                    text-anchor="middle" fill="currentColor">M</text>
+                            </svg>
+                            CAD Studio
+                        </a>
+                        <a href="#devops"
+                            class="group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <svg class="w-5 h-5 group-hover:text-meaux-cyan transition-colors" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <rect x="3" y="4" width="18" height="16" rx="2" fill="currentColor" opacity="0.15" />
+                                <line x1="7" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1.5" />
+                                <line x1="7" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="1.5" />
+                                <line x1="7" y1="16" x2="13" y2="16" stroke="currentColor" stroke-width="1.5" /><text
+                                    x="17" y="14" font-family="Inter, sans-serif" font-weight="800" font-size="5"
+                                    text-anchor="middle" fill="currentColor">M</text>
+                            </svg>
+                            DevOps
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Integrations -->
+                <div class="space-y-1">
+                    <h3 class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">Integrations
+                    </h3>
+                    <nav class="space-y-1">
+                        <a href="#integrations"
+                            class="group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <svg class="w-5 h-5 group-hover:text-pink-400 transition-colors" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <rect x="8" y="3" width="8" height="6" rx="1" fill="currentColor" opacity="0.2" />
+                                <rect x="8" y="15" width="8" height="6" rx="1" fill="currentColor" opacity="0.2" />
+                                <line x1="12" y1="9" x2="12" y2="15" stroke="currentColor" stroke-width="2" /><text
+                                    x="12" y="13" font-family="Inter, sans-serif" font-weight="800" font-size="5"
+                                    text-anchor="middle" fill="currentColor">M</text>
+                            </svg>
+                            Apps
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Settings -->
+                <div class="space-y-1">
+                    <h3 class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">Settings</h3>
+                    <nav class="space-y-1">
+                        <a href="#preferences"
+                            class="group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors interactable">
+                            <svg class="w-5 h-5 group-hover:text-white transition-colors" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.2" />
+                                <path
+                                    d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"
+                                    stroke="currentColor" stroke-width="1.5" /><text x="12" y="14"
+                                    font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle"
+                                    fill="currentColor">M</text>
+                            </svg>
+                            Preferences
+                        </a>
+                    </nav>
+                </div>
+
+            </div>
+
+            <!-- User Footer -->
+            <div class="p-4 border-t border-slate-800 bg-slate-900">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-full bg-gradient-to-r from-slate-700 to-slate-600 flex items-center justify-center text-sm font-bold text-white border border-slate-500">
+                        MA
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-white truncate">Admin User</p>
+                        <p class="text-xs text-slate-500 truncate">admin@meauxaccess.com</p>
+                    </div>
+                    <button class="text-slate-400 hover:text-white interactable">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-950 relative">
+
+            <!-- Topbar -->
+            <header
+                class="h-20 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md z-20 flex items-center justify-between px-8">
+                <div class="flex items-center gap-4">
+                    <button id="mobileMenuBtn" class="lg:hidden text-slate-400 hover:text-white interactable">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" />
+                            <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" />
+                            <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" />
+                            <text x="12" y="13" font-family="Inter, sans-serif" font-weight="800" font-size="4"
+                                text-anchor="middle" fill="currentColor" opacity="0.3">M</text>
+                        </svg>
+                    </button>
+                    <!-- Search -->
+                    <div
+                        class="hidden md:flex items-center gap-2 bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-2 w-72 hover:border-slate-700 transition-colors group">
+                        <svg class="w-4 h-4 text-slate-500 group-hover:text-meaux-cyan transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8" fill="none" stroke-width="2" />
+                            <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" />
+                            <path d="M11 8 L9 12 L11 12 L13 8 L11 8" fill="currentColor" opacity="0.4" />
+                        </svg>
+                        <input type="text" placeholder="Search modules... (Cmd+K)"
+                            class="bg-transparent border-none focus:ring-0 text-sm text-slate-200 placeholder-slate-500 w-full outline-none interactable">
+                    </div>
+                </div>
+
+            </header>
+
+            <!-- Sitewide Chat Agent Sam -->
+            <div id="agentSamChat" class="fixed bottom-6 right-6 z-50 hidden">
+                <div
+                    class="bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl w-96 h-[600px] flex flex-col">
+                    <div class="flex items-center justify-between p-4 border-b border-slate-800">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-full bg-gradient-to-br from-meaux-cyan to-meaux-blue flex items-center justify-center text-white font-bold">
+                                S
+                            </div>
+                            <div>
+                                <div class="font-semibold text-white">Agent Sam</div>
+                                <div class="text-xs text-slate-400">MeauxOS AI Assistant</div>
+                            </div>
+                        </div>
+                        <button onclick="toggleAgentSam()" class="text-slate-400 hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="agentSamMessages" class="flex-1 overflow-y-auto p-4 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-8 h-8 rounded-full bg-gradient-to-br from-meaux-cyan to-meaux-blue flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                                S
+                            </div>
+                            <div class="flex-1 bg-slate-800/50 rounded-lg p-3 text-sm text-slate-300">
+                                <strong class="text-meaux-cyan">Agent Sam:</strong> Hello! I'm your MeauxOS AI
+                                assistant. I can help with code, deployment, debugging, and accessing your Cloudflare
+                                resources. What would you like help with?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-slate-800">
+                        <div class="flex gap-2 mb-2">
+                            <button onclick="selectAgentAI('gemini')"
+                                class="flex-1 px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700 text-xs font-medium text-slate-300 hover:bg-slate-700 transition-colors agent-ai-btn active flex items-center justify-center gap-1.5"
+                                data-ai="gemini">
+                                <svg class="w-4 h-4 text-meaux-cyan" fill="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15" />
+                                    <path d="M12 6 L8 14 L12 14 L16 6 L12 6" fill="currentColor" />
+                                    <circle cx="12" cy="18" r="2" fill="currentColor" opacity="0.6" />
+                                </svg>
+                                Gemini
+                            </button>
+                            <button onclick="selectAgentAI('groq')"
+                                class="flex-1 px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700 text-xs font-medium text-slate-300 hover:bg-slate-700 transition-colors agent-ai-btn flex items-center justify-center gap-1.5"
+                                data-ai="groq">
+                                <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2 L14 8 L20 8 L15 12 L17 18 L12 14 L7 18 L9 12 L4 8 L10 8 Z"
+                                        fill="currentColor" opacity="0.8" />
+                                    <path d="M12 8 L10 12 L12 12 L14 8 L12 8" fill="currentColor" />
+                                </svg>
+                                Groq
+                            </button>
+                            <button onclick="selectAgentAI('gemini-pro')"
+                                class="flex-1 px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700 text-xs font-medium text-slate-300 hover:bg-slate-700 transition-colors agent-ai-btn flex items-center justify-center gap-1.5"
+                                data-ai="gemini-pro">
+                                <svg class="w-4 h-4 text-meaux-cyan" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2 L4 8 L8 8 L8 16 L4 16 L12 22 L20 16 L16 16 L16 8 L20 8 Z"
+                                        fill="currentColor" opacity="0.8" />
+                                    <path d="M12 10 L10 14 L12 14 L14 10 L12 10" fill="currentColor" />
+                                </svg>
+                                Pro
+                            </button>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="agentSamInput" placeholder="Ask Agent Sam..."
+                                class="flex-1 px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-meaux-cyan transition-colors"
+                                onkeypress="if(event.key==='Enter') sendAgentSamMessage()">
+                            <button onclick="sendAgentSamMessage()"
+                                class="px-4 py-2 rounded-lg bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white font-medium hover:shadow-lg shadow-meaux-cyan/25 transition-all">
+                                Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="toggleAgentSam()"
+                class="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-meaux-cyan to-meaux-blue text-white shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all flex items-center justify-center"
+                id="agentSamToggle">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                    </path>
+                </svg>
+            </button>
+
+            <!-- Content Scroll Area -->
+            <div class="flex-1 overflow-y-auto relative scroll-smooth">
+
+                <!-- Ambient Background Glow -->
+                <div
+                    class="fixed top-0 left-[280px] w-full h-[500px] bg-gradient-to-b from-meaux-blue/10 to-transparent pointer-events-none z-0">
+                </div>
+
+                <div class="max-w-[1600px] mx-auto p-6 md:p-10 space-y-12 relative z-10">
+
+                    <!-- Galaxy Hero Section -->
+                    <div
+                        class="hero-glass rounded-3xl p-1 overflow-hidden shadow-2xl shadow-black/50 border border-white/5 relative">
+                        <div
+                            class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[450px] p-8 md:p-12 relative z-10">
+                            <!-- Left: Content -->
+                            <div class="space-y-8 animate-fade-in-up">
+                                <h1 class="text-5xl md:text-6xl font-bold leading-tight text-white tracking-tight">
+                                    Company-Wide <br>
+                                    <span
+                                        class="text-transparent bg-clip-text bg-gradient-to-r from-meaux-cyan to-meaux-purple">Operations
+                                        Hub</span>
+                                </h1>
+                                <p class="text-slate-400 text-lg leading-relaxed max-w-lg">
+                                    MeauxOS brings your entire workflow into one powerful platform. From project
+                                    management to analytics, everything you need to collaborate and thrive.
+                                </p>
+                                <div class="flex flex-wrap gap-4">
+                                    <button
+                                        class="px-8 py-4 rounded-xl bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white font-bold shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 hover:scale-105 transition-all interactable">
+                                        Launch Dashboard
+                                    </button>
+                                    <button
+                                        class="px-8 py-4 rounded-xl bg-slate-800/50 border border-white/10 text-white font-bold hover:bg-white/5 transition-all interactable">
+                                        Documentation
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Right: Three.js Galaxy Engine -->
+                            <div class="h-[400px] w-full relative">
+                                <div id="canvas-container"
+                                    class="w-full h-full absolute inset-0 rounded-2xl overflow-hidden"></div>
+
+                                <!-- Floating Data Widget (Decorative) -->
+                                <div
+                                    class="absolute bottom-6 right-6 bg-slate-900/80 backdrop-blur-md p-4 rounded-xl border border-white/10 flex items-center gap-4 animate-float">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-meaux-cyan/20 flex items-center justify-center text-meaux-cyan">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-slate-400 uppercase tracking-wider">Network Load</div>
+                                        <div class="text-lg font-mono font-bold text-white">98.4%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Options Grid Section -->
+                    <section id="dashboard-section" class="page-section">
+                        <div class="flex items-end justify-between mb-8">
+                            <div>
+                                <h2 class="text-2xl font-bold text-white mb-2">Meaux Modules</h2>
+                                <p class="text-slate-400">Complete suite of tools for your organization</p>
+                            </div>
+                        </div>
+
+                        <!-- 1:1 Glassmorphic Icons Grid -->
+                        <div id="optionsGrid"
+                            class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+                            <!-- Injected via JS -->
+                        </div>
+                    </section>
+
+                    <!-- DevOps Studio Section -->
+                    <section id="devops-section" class="page-section hidden"
+                        style="height: 100vh; width: 100%; position: fixed; top: 0; left: 0; z-index: 1000; background: #020617;">
+                        <iframe src="/devops-ide.html" style="width: 100%; height: 100%; border: none;"></iframe>
+                    </section>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <!-- Terminal -->
+                        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                            <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <svg class="w-6 h-6 text-meaux-cyan" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Terminal
+                                </h3>
+                                <div class="flex gap-2">
+                                    <button onclick="clearTerminal()"
+                                        class="px-3 py-1.5 rounded-lg bg-slate-800/50 border border-white/5 text-sm font-medium text-slate-300 hover:bg-slate-700/50 transition-colors interactable">Clear</button>
+                                    <button onclick="runTerminalCommand()"
+                                        class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white text-sm font-medium shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all interactable">Run</button>
+                                </div>
+                            </div>
+                            <div id="terminal"
+                                class="bg-slate-950 rounded-xl p-4 font-mono text-sm min-h-[300px] max-h-[400px] overflow-y-auto border border-white/5">
+                                <div class="text-emerald-400 mb-2"><span class="text-meaux-cyan">$</span> Ready for
+                                    commands...</div>
+                                <div id="terminalOutput"></div>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span class="text-meaux-cyan">$</span>
+                                    <input type="text" id="terminalInput"
+                                        class="flex-1 bg-transparent border-none text-emerald-400 focus:outline-none font-mono"
+                                        placeholder="Enter command..."
+                                        onkeypress="if(event.key==='Enter') runTerminalCommand()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Assistants -->
+                        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                            <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <svg class="w-6 h-6 text-meaux-cyan" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                    </svg>
+                                    AI Assistants
+                                </h3>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 mb-4">
+                                <button onclick="selectAI('gemini')" class="ai-assistant-btn active" data-ai="gemini">
+                                    <svg class="w-8 h-8 mb-1 text-meaux-cyan" fill="currentColor" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15" />
+                                        <path d="M12 6 L8 14 L12 14 L16 6 L12 6" fill="currentColor" />
+                                        <circle cx="12" cy="18" r="2" fill="currentColor" opacity="0.6" />
+                                    </svg>
+                                    <div class="text-xs font-bold text-meaux-cyan">Gemini</div>
+                                </button>
+                                <button onclick="selectAI('groq')" class="ai-assistant-btn" data-ai="groq">
+                                    <svg class="w-8 h-8 mb-1 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2 L14 8 L20 8 L15 12 L17 18 L12 14 L7 18 L9 12 L4 8 L10 8 Z"
+                                            fill="currentColor" opacity="0.8" />
+                                        <path d="M12 8 L10 12 L12 12 L14 8 L12 8" fill="currentColor" />
+                                    </svg>
+                                    <div class="text-xs font-bold text-purple-400">Groq</div>
+                                </button>
+                                <button onclick="selectAI('gemini-pro')" class="ai-assistant-btn" data-ai="gemini-pro">
+                                    <svg class="w-8 h-8 mb-1 text-meaux-cyan" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2 L4 8 L8 8 L8 16 L4 16 L12 22 L20 16 L16 16 L16 8 L20 8 Z"
+                                            fill="currentColor" opacity="0.8" />
+                                        <path d="M12 10 L10 14 L12 14 L14 10 L12 10" fill="currentColor" />
+                                    </svg>
+                                    <div class="text-xs font-bold text-meaux-cyan">Gemini Pro</div>
+                                </button>
+                            </div>
+                            <div id="aiChat"
+                                class="bg-slate-950 rounded-xl p-4 min-h-[200px] max-h-[250px] overflow-y-auto border border-white/5 mb-3">
+                                <div class="text-sm mb-3 p-3 rounded-lg bg-purple-500/10 border-l-2 border-purple-500">
+                                    <strong class="text-purple-400">AI Assistant:</strong> <span
+                                        class="text-slate-300">Hello! I'm your AI assistant. I can help you with
+                                        code, deployment, or debugging. What would you like help with?</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <input type="text" id="aiInput"
+                                    class="flex-1 px-4 py-2 rounded-lg bg-slate-900/50 border border-white/5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-meaux-cyan transition-colors"
+                                    placeholder="Ask AI for help..."
+                                    onkeypress="if(event.key==='Enter') sendAIMessage()">
+                                <button onclick="sendAIMessage()"
+                                    class="px-4 py-2 rounded-lg bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white text-sm font-medium shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all interactable">Send</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <!-- 3D Creation & Conversion -->
+                        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                            <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <svg class="w-6 h-6 text-meaux-cyan" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
+                                    3D Creation & Conversion
+                                </h3>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 mb-4">
+                                <button onclick="openMeshyText()"
+                                    class="p-4 rounded-xl bg-slate-900/50 border border-white/5 hover:border-meaux-cyan transition-colors text-center interactable">
+                                    <div class="text-lg font-bold text-meaux-cyan mb-1">Meshy AI</div>
+                                    <div class="text-xs text-slate-400">Text-to-3D</div>
+                                </button>
+                                <button onclick="openMeshyImage()"
+                                    class="p-4 rounded-xl bg-slate-900/50 border border-white/5 hover:border-meaux-cyan transition-colors text-center interactable">
+                                    <div class="text-lg font-bold text-meaux-cyan mb-1">Meshy AI</div>
+                                    <div class="text-xs text-slate-400">Image-to-3D</div>
+                                </button>
+                                <button onclick="openCloudConvert()"
+                                    class="p-4 rounded-xl bg-slate-900/50 border border-white/5 hover:border-purple-500 transition-colors text-center interactable">
+                                    <div class="text-lg font-bold text-purple-400 mb-1">CloudConvert</div>
+                                    <div class="text-xs text-slate-400">Format Conversion</div>
+                                </button>
+                            </div>
+                            <div
+                                class="bg-slate-950 rounded-xl p-8 border border-white/5 min-h-[200px] flex items-center justify-center text-slate-500 text-sm">
+                                3D model preview will appear here
+                            </div>
+                        </div>
+
+                        <!-- HTML Builder & Preview -->
+                        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                            <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <svg class="w-6 h-6 text-meaux-cyan" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                    </svg>
+                                    HTML Builder & Preview
+                                </h3>
+                                <div class="flex gap-2">
+                                    <button onclick="renderHTML()"
+                                        class="px-3 py-1.5 rounded-lg bg-slate-800/50 border border-white/5 text-sm font-medium text-slate-300 hover:bg-slate-700/50 transition-colors interactable">Render</button>
+                                    <button onclick="saveHTMLToR2()"
+                                        class="px-3 py-1.5 rounded-lg bg-slate-800/50 border border-white/5 text-sm font-medium text-slate-300 hover:bg-slate-700/50 transition-colors interactable">Save
+                                        to R2</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <div class="text-xs text-slate-400 mb-2">HTML Code</div>
+                                    <textarea id="htmlCode"
+                                        class="w-full h-[300px] bg-slate-950 rounded-xl p-4 font-mono text-sm text-emerald-400 border border-white/5 focus:outline-none focus:border-meaux-cyan resize-none"
+                                        placeholder="<html>..."><!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <h1>Hello MeauxOS!</h1>
+</body>
+</html></textarea>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 mb-2">Live Preview</div>
+                                    <iframe id="htmlPreview"
+                                        class="w-full h-[300px] bg-white rounded-xl border border-white/5"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <!-- Browser Rendering -->
+                        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                            <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <svg class="w-6 h-6 text-meaux-cyan" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                    </svg>
+                                    Browser Rendering
+                                </h3>
+                                <button onclick="openBrowserRender()"
+                                    class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white text-sm font-medium shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all interactable">Open
+                                    in Browser</button>
+                            </div>
+                            <input type="text" id="browserUrl"
+                                class="w-full px-4 py-2 rounded-lg bg-slate-900/50 border border-white/5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-meaux-cyan transition-colors mb-3"
+                                placeholder="Enter URL or paste HTML..."
+                                value="https://meauxos.meauxbility.workers.dev">
+                            <div
+                                class="bg-slate-950 rounded-xl p-8 border border-white/5 min-h-[400px] flex items-center justify-center text-slate-500 text-sm">
+                                Browser rendering view - Enter URL or HTML to render
+                            </div>
+                        </div>
+
+                        <!-- MCP Integration -->
+                        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                            <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <svg class="w-6 h-6 text-meaux-cyan" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                    MCP Integration
+                                    <span
+                                        class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">Beta</span>
+                                </h3>
+                            </div>
+                            <div
+                                class="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 mb-4">
+                                <div class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
+                                <div class="text-sm text-slate-300">Model Context Protocol (MCP) allows AI to access
+                                    external tools and data sources.</div>
+                            </div>
+                            <button onclick="connectMCP()"
+                                class="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white font-medium shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all interactable mb-3">Connect
+                                MCP Server</button>
+                            <div
+                                class="bg-slate-950 rounded-xl p-6 border border-white/5 text-center text-slate-500 text-sm">
+                                Not connected
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Settings -->
+                    <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                        <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                <svg class="w-6 h-6 text-meaux-cyan" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                User Settings
+                            </h3>
+                            <div class="flex gap-2">
+                                <button onclick="cancelSettings()"
+                                    class="px-3 py-1.5 rounded-lg bg-slate-800/50 border border-white/5 text-sm font-medium text-slate-300 hover:bg-slate-700/50 transition-colors interactable">Cancel</button>
+                                <button onclick="saveSettings()"
+                                    class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white text-sm font-medium shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all interactable">Save
+                                    Changes</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wide">Theme</h4>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="theme" value="dark" checked class="text-meaux-cyan">
+                                        <span class="text-sm text-slate-300">Dark</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="theme" value="light" class="text-meaux-cyan">
+                                        <span class="text-sm text-slate-300">Light</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="theme" value="brand" class="text-meaux-cyan">
+                                        <span class="text-sm text-slate-300">Brand</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wide">Account
+                                </h4>
+                                <div class="space-y-3">
+                                    <input type="email"
+                                        class="w-full px-4 py-2 rounded-lg bg-slate-900/50 border border-white/5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-meaux-cyan transition-colors"
+                                        placeholder="Email" value="admin@meauxaccess.com">
+                                    <input type="password"
+                                        class="w-full px-4 py-2 rounded-lg bg-slate-900/50 border border-white/5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-meaux-cyan transition-colors"
+                                        placeholder="New Password">
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-400 mb-3 uppercase tracking-wide">
+                                    Preferences</h4>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" checked class="text-meaux-cyan rounded">
+                                        <span class="text-sm text-slate-300">Email notifications</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" checked class="text-meaux-cyan rounded">
+                                        <span class="text-sm text-slate-300">Desktop notifications</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" checked class="text-meaux-cyan rounded">
+                                        <span class="text-sm text-slate-300">Auto-save drafts</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </section>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- 1. System Config & Data (Extended Plan) ---
+        // MeauxOS Branded Icons - All feature the "M" monogram
+        const icons = {
+            dashboard: '<rect x="3" y="3" width="8" height="8" rx="1" fill="currentColor" opacity="0.2"/><rect x="13" y="3" width="8" height="8" rx="1" fill="currentColor" opacity="0.2"/><rect x="3" y="13" width="8" height="8" rx="1" fill="currentColor" opacity="0.2"/><rect x="13" y="13" width="8" height="8" rx="1" fill="currentColor" opacity="0.2"/><text x="7" y="9.5" font-family="Inter, sans-serif" font-weight="800" font-size="5" text-anchor="middle" fill="currentColor">M</text><text x="17" y="9.5" font-family="Inter, sans-serif" font-weight="800" font-size="5" text-anchor="middle" fill="currentColor">M</text><text x="7" y="19.5" font-family="Inter, sans-serif" font-weight="800" font-size="5" text-anchor="middle" fill="currentColor">M</text><text x="17" y="19.5" font-family="Inter, sans-serif" font-weight="800" font-size="5" text-anchor="middle" fill="currentColor">M</text>',
+            work: '<rect x="2" y="4" width="6" height="16" rx="1" fill="currentColor" opacity="0.15"/><rect x="9" y="4" width="6" height="16" rx="1" fill="currentColor" opacity="0.15"/><rect x="16" y="4" width="6" height="16" rx="1" fill="currentColor" opacity="0.15"/><text x="5" y="13" font-family="Inter, sans-serif" font-weight="800" font-size="6" text-anchor="middle" fill="currentColor">M</text><text x="12" y="13" font-family="Inter, sans-serif" font-weight="800" font-size="6" text-anchor="middle" fill="currentColor">M</text><text x="19" y="13" font-family="Inter, sans-serif" font-weight="800" font-size="6" text-anchor="middle" fill="currentColor">M</text>',
+            stats: '<rect x="3" y="18" width="3" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><rect x="7" y="14" width="3" height="8" rx="0.5" fill="currentColor" opacity="0.6"/><rect x="11" y="10" width="3" height="12" rx="0.5" fill="currentColor" opacity="0.6"/><rect x="15" y="6" width="3" height="16" rx="0.5" fill="currentColor" opacity="0.6"/><text x="4.5" y="20" font-family="Inter, sans-serif" font-weight="800" font-size="3" text-anchor="middle" fill="currentColor">M</text><text x="8.5" y="18" font-family="Inter, sans-serif" font-weight="800" font-size="3" text-anchor="middle" fill="currentColor">M</text><text x="12.5" y="14" font-family="Inter, sans-serif" font-weight="800" font-size="3" text-anchor="middle" fill="currentColor">M</text><text x="16.5" y="10" font-family="Inter, sans-serif" font-weight="800" font-size="3" text-anchor="middle" fill="currentColor">M</text>',
+            team: '<circle cx="9" cy="7" r="4" fill="currentColor" opacity="0.2"/><circle cx="15" cy="7" r="4" fill="currentColor" opacity="0.2"/><path d="M3 21c0-2.5 2-4.5 6-4.5s6 2 6 4.5" fill="currentColor" opacity="0.2"/><path d="M15 21c0-2.5 2-4.5 6-4.5s6 2 6 4.5" fill="currentColor" opacity="0.2"/><text x="9" y="9" font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text><text x="15" y="9" font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text>',
+            doc: '<path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z" fill="currentColor" opacity="0.15"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5"/><text x="12" y="15" font-family="Inter, sans-serif" font-weight="800" font-size="8" text-anchor="middle" fill="currentColor">M</text>',
+            photo: '<rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" opacity="0.15"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" opacity="0.4"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.5"/><text x="12" y="14" font-family="Inter, sans-serif" font-weight="800" font-size="7" text-anchor="middle" fill="currentColor">M</text>',
+            gallery: '<rect x="3" y="3" width="7" height="7" rx="1" fill="currentColor" opacity="0.15"/><rect x="14" y="3" width="7" height="7" rx="1" fill="currentColor" opacity="0.15"/><rect x="3" y="14" width="7" height="7" rx="1" fill="currentColor" opacity="0.15"/><rect x="14" y="14" width="7" height="7" rx="1" fill="currentColor" opacity="0.15"/><text x="6.5" y="7.5" font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text><text x="17.5" y="7.5" font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text><text x="6.5" y="18.5" font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text><text x="17.5" y="18.5" font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text>',
+            media: '<rect x="3" y="5" width="18" height="14" rx="2" fill="currentColor" opacity="0.15"/><polygon points="9,9 9,15 15,12" fill="currentColor" opacity="0.6"/><text x="12" y="19" font-family="Inter, sans-serif" font-weight="800" font-size="5" text-anchor="middle" fill="currentColor">M</text>',
+            cloud: '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" fill="currentColor" opacity="0.2"/><text x="12" y="16" font-family="Inter, sans-serif" font-weight="800" font-size="7" text-anchor="middle" fill="currentColor">M</text>',
+            cad: '<rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" opacity="0.1"/><line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="1.5"/><line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="1.5"/><text x="12" y="15" font-family="Inter, sans-serif" font-weight="800" font-size="6" text-anchor="middle" fill="currentColor">M</text>',
+            app: '<rect x="4" y="4" width="6" height="6" rx="1" fill="currentColor" opacity="0.2"/><rect x="14" y="4" width="6" height="6" rx="1" fill="currentColor" opacity="0.2"/><rect x="4" y="14" width="6" height="6" rx="1" fill="currentColor" opacity="0.2"/><rect x="14" y="14" width="6" height="6" rx="1" fill="currentColor" opacity="0.2"/><text x="7" y="8.5" font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text><text x="17" y="8.5" font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text><text x="7" y="18.5" font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text><text x="17" y="18.5" font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text>',
+            ai: '<circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" fill="none"/><text x="12" y="15" font-family="Inter, sans-serif" font-weight="800" font-size="6" text-anchor="middle" fill="currentColor">M</text>',
+            code: '<path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4z" fill="currentColor" opacity="0.6"/><path d="M14.6 16.6l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" fill="currentColor" opacity="0.6"/><text x="12" y="14" font-family="Inter, sans-serif" font-weight="800" font-size="4" text-anchor="middle" fill="currentColor">M</text>',
+            payment: '<rect x="3" y="4" width="18" height="16" rx="2" fill="currentColor" opacity="0.15"/><rect x="6" y="8" width="12" height="2" rx="1" fill="currentColor" opacity="0.4"/><text x="12" y="15" font-family="Inter, sans-serif" font-weight="800" font-size="6" text-anchor="middle" fill="currentColor">M</text>',
+            auth: '<path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor" opacity="0.2"/><text x="12" y="15" font-family="Inter, sans-serif" font-weight="800" font-size="7" text-anchor="middle" fill="currentColor">M</text>',
+            integration: '<rect x="8" y="3" width="8" height="6" rx="1" fill="currentColor" opacity="0.2"/><rect x="8" y="15" width="8" height="6" rx="1" fill="currentColor" opacity="0.2"/><line x1="12" y1="9" x2="12" y2="15" stroke="currentColor" stroke-width="2"/><text x="12" y="13" font-family="Inter, sans-serif" font-weight="800" font-size="5" text-anchor="middle" fill="currentColor">M</text>'
+        };
+
+        const modules = [
+            { icon: 'dashboard', code: 'MX-WK', name: 'MeauxWork', desc: 'Project overview', color: 'from-blue-400 to-blue-600' },
+            { icon: 'stats', code: 'MX-ST', name: 'MeauxStats', desc: 'Real-time metrics', color: 'from-emerald-400 to-emerald-600' },
+            { icon: 'team', code: 'MX-TM', name: 'MeauxTeam', desc: 'Team portfolio', color: 'from-violet-400 to-violet-600' },
+            { icon: 'doc', code: 'MX-DC', name: 'MeauxDOC', desc: 'Document storage', color: 'from-amber-400 to-amber-600' },
+            { icon: 'photo', code: 'MX-PH', name: 'MeauxPHOTO', desc: 'Editing studio', color: 'from-pink-400 to-pink-600' },
+            { icon: 'gallery', code: 'MX-MM', name: 'MeauxMemories', desc: 'Asset library', color: 'from-rose-400 to-rose-600' },
+            { icon: 'media', code: 'MX-MD', name: 'MeauxMedia', desc: 'Social hub', color: 'from-fuchsia-400 to-fuchsia-600' },
+            { icon: 'cloud', code: 'MX-CL', name: 'MeauxCloud', desc: 'Unified storage', color: 'from-cyan-400 to-cyan-600' },
+            { icon: 'cad', code: 'MX-CD', name: 'MeauxCAD', desc: '3D design', color: 'from-orange-400 to-orange-600' },
+            { icon: 'app', code: 'FA', name: 'Fullstack App', desc: 'Application', color: 'from-indigo-400 to-indigo-600' },
+            { icon: 'app', code: 'SA', name: 'SaaS Platform', desc: 'Subscription', color: 'from-sky-400 to-sky-600' },
+            { icon: 'payment', code: 'EC', name: 'Ecommerce', desc: 'Store solution', color: 'from-green-400 to-green-600' },
+            { icon: 'ai', code: 'AI', name: 'AI Integration', desc: 'NLP Features', color: 'from-purple-400 to-purple-600' },
+            { icon: 'stats', code: 'DS', name: 'Dash Builder', desc: 'Custom view', color: 'from-teal-400 to-teal-600' },
+            { icon: 'auth', code: 'AU', name: 'Authentication', desc: 'Secure login', color: 'from-red-400 to-red-600' },
+            { icon: 'payment', code: 'PY', name: 'Payments', desc: 'Billing', color: 'from-yellow-400 to-yellow-600' },
+            { icon: 'integration', code: 'FG', name: 'Figma Sync', desc: 'Design sync', color: 'from-purple-500 to-pink-500' },
+            { icon: 'integration', code: 'SP', name: 'Spline 3D', desc: 'Real-time 3D', color: 'from-pink-500 to-rose-500' },
+            { icon: 'ai', code: 'MY', name: 'Meshy.ai', desc: 'AI Models', color: 'from-blue-500 to-cyan-500' },
+            { icon: 'integration', code: 'AD', name: 'Adobe Suite', desc: 'Creative Cloud', color: 'from-red-500 to-orange-500' },
+            { icon: 'media', code: 'CC', name: 'CapCut Pro', desc: 'Video Edit', color: 'from-slate-100 to-slate-400' },
+            { icon: 'code', code: 'CI', name: 'CI/CD', desc: 'Pipeline', color: 'from-gray-400 to-gray-600' },
+            { icon: 'cloud', code: 'DK', name: 'Docker', desc: 'Containers', color: 'from-blue-400 to-sky-400' },
+            { icon: 'auth', code: 'SE', name: 'Security', desc: 'Auditing', color: 'from-slate-500 to-slate-700' },
+        ];
+
+        // --- 2. Render Functions ---
+        function renderModules() {
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = modules.map(mod => `
+                <div class="group flex flex-col items-center gap-3 cursor-pointer interactable" onclick="console.log('Launch ${mod.code}')">
+                    <div class="w-20 h-20 rounded-[22px] glass-icon flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br ${mod.color} opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                        <svg class="w-10 h-10 text-white relative z-10" fill="currentColor" viewBox="0 0 24 24">
+                            ${icons[mod.icon] || icons.app}
+                        </svg>
+            </div>
+                    <div class="text-center">
+                        <div class="text-sm font-medium text-white group-hover:text-meaux-cyan transition-colors">${mod.name}</div>
+                        <div class="text-[10px] text-slate-500 font-mono mt-0.5">/${mod.code}</div>
+            </div>
+        </div>
+    `).join('');
+        }
+
+        // --- 3. Three.js Galaxy Hero Engine ---
+        function initGalaxy() {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+
+            // Fog for depth
+            scene.fog = new THREE.FogExp2(0x0f172a, 0.04); // Slate-900 match
+
+            const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 25;
+            camera.position.y = 0;
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            const galaxyGroup = new THREE.Group();
+            scene.add(galaxyGroup);
+
+            // UI Texture Generator
+            function createUITexture() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 256;
+                canvas.height = 340;
+                const ctx = canvas.getContext('2d');
+
+                // Card Body
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.05)';
+                ctx.fillRect(0, 0, 256, 340);
+
+                // Border
+                ctx.strokeStyle = 'rgba(0, 212, 255, 0.4)';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(0, 0, 256, 340);
+
+                // UI Elements
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.2)';
+                ctx.fillRect(20, 20, 100, 30);
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.fillRect(20, 70, 216, 15);
+                ctx.fillRect(20, 100, 180, 15);
+                ctx.fillRect(20, 130, 216, 15);
+
+                // Charts
+                ctx.fillStyle = 'rgba(99, 102, 241, 0.4)';
+                ctx.fillRect(20, 240, 40, 80);
+                ctx.fillStyle = 'rgba(236, 72, 153, 0.4)';
+                ctx.fillRect(80, 200, 40, 120);
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.4)';
+                ctx.fillRect(140, 260, 40, 60);
+
+                return new THREE.CanvasTexture(canvas);
+            }
+
+            // --- Scene Elements ---
+
+            // 1. Stars
+            const starGeo = new THREE.BufferGeometry();
+            const starCount = 2000;
+            const starPos = new Float32Array(starCount * 3);
+            for (let i = 0; i < starCount; i++) {
+                starPos[i * 3] = (Math.random() - 0.5) * 100;
+                starPos[i * 3 + 1] = (Math.random() - 0.5) * 100;
+                starPos[i * 3 + 2] = (Math.random() - 0.5) * 50;
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+            const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.15, transparent: true, opacity: 0.8 });
+            const stars = new THREE.Points(starGeo, starMat);
+            galaxyGroup.add(stars);
+
+            // 2. Falling UI Cards
+            const uiCards = [];
+            const uiTex = createUITexture();
+            const cardGeo = new THREE.PlaneGeometry(2, 2.8);
+            const cardMat = new THREE.MeshBasicMaterial({
+                map: uiTex,
+                transparent: true,
+                opacity: 0.6,
+                side: THREE.DoubleSide,
+                blending: THREE.AdditiveBlending
+            });
+
+            for (let i = 0; i < 30; i++) {
+                const card = new THREE.Mesh(cardGeo, cardMat);
+                card.position.set(
+                    (Math.random() - 0.5) * 35,
+                    (Math.random() - 0.5) * 35,
+                    (Math.random() - 0.5) * 20
+                );
+                card.rotation.set(Math.random() * 0.5, Math.random() * 0.5, 0);
+                card.userData = {
+                    speed: 0.02 + Math.random() * 0.04,
+                    rotSpeed: (Math.random() - 0.5) * 0.005
+                };
+                galaxyGroup.add(card);
+                uiCards.push(card);
+            }
+
+            // 3. Background Grid Wireframe
+            const coreGeo = new THREE.IcosahedronGeometry(12, 1);
+            const coreMat = new THREE.MeshBasicMaterial({ color: 0x00D4FF, wireframe: true, transparent: true, opacity: 0.03 });
+            const core = new THREE.Mesh(coreGeo, coreMat);
+            galaxyGroup.add(core);
+
+            // --- Animation ---
+            let mouseX = 0;
+            let mouseY = 0;
+
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                mouseX = ((e.clientX - rect.left) - rect.width / 2) * 0.002;
+                mouseY = ((e.clientY - rect.top) - rect.height / 2) * 0.002;
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Rotate Galaxy
+                stars.rotation.y += 0.0005;
+                core.rotation.y -= 0.001;
+                core.rotation.x -= 0.0005;
+
+                // Falling Cards Logic
+                uiCards.forEach(card => {
+                    card.position.y -= card.userData.speed;
+                    card.rotation.y += card.userData.rotSpeed;
+                    if (card.position.y < -15) {
+                        card.position.y = 15;
+                        card.position.x = (Math.random() - 0.5) * 35;
+                        card.position.z = (Math.random() - 0.5) * 20;
+                    }
+                });
+
+                // Parallax
+                galaxyGroup.rotation.x += 0.05 * (mouseY * 0.5 - galaxyGroup.rotation.x);
+                galaxyGroup.rotation.y += 0.05 * (mouseX * 0.5 - galaxyGroup.rotation.y);
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        // --- 4. Magnetic Custom Cursor ---
+        function initCursor() {
+            const dot = document.getElementById('cursor-dot');
+            const outline = document.getElementById('cursor-outline');
+
+            window.addEventListener('mousemove', (e) => {
+                const posX = e.clientX;
+                const posY = e.clientY;
+
+                // Dot follows instantly
+                dot.style.left = `${posX}px`;
+                dot.style.top = `${posY}px`;
+
+                // Outline follows with slight delay (animation in CSS)
+                outline.animate({
+                    left: `${posX}px`,
+                    top: `${posY}px`
+                }, { duration: 500, fill: "forwards" });
+            });
+
+            // Hover effects
+            const interactables = document.querySelectorAll('.interactable');
+            interactables.forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+            });
+        }
+
+        // --- 5. Hash Routing ---
+        function showPage(hash) {
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            const sectionMap = {
+                '': 'dashboard-section',
+                '#dashboard': 'dashboard-section',
+                '#devops': 'devops-section',
+                '#meauxwork': 'meauxwork-section',
+                '#meauxstats': 'meauxstats-section',
+                '#meauxteam': 'meauxteam-section',
+                '#meauxdoc': 'meauxdoc-section',
+                '#meauxphoto': 'meauxphoto-section',
+                '#meauxmemories': 'meauxmemories-section',
+                '#meauxmedia': 'meauxmedia-section',
+                '#meauxcloud': 'meauxcloud-section',
+                '#meauxcad': 'meauxcad-section',
+                '#integrations': 'integrations-section',
+                '#preferences': 'preferences-section'
+            };
+
+            const sectionId = sectionMap[hash] || 'dashboard-section';
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.remove('hidden');
+            }
+        }
+
+        function initRouting() {
+            // Show page based on current hash
+            showPage(window.location.hash);
+
+            // Update active nav item
+            document.querySelectorAll('a[href^="#"]').forEach(link => {
+                link.classList.remove('bg-meaux-cyan/10', 'text-meaux-cyan', 'border-meaux-cyan/10');
+                if (link.getAttribute('href') === window.location.hash ||
+                    (window.location.hash === '' && link.getAttribute('href') === '#dashboard')) {
+                    link.classList.add('bg-meaux-cyan/10', 'text-meaux-cyan', 'border-meaux-cyan/10');
+                }
+            });
+        }
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', initRouting);
+
+        // --- 6. DevOps Functions ---
+        let selectedAI = 'gemini';
+        let terminalHistory = [];
+
+        function selectAI(name) {
+            selectedAI = name;
+            document.querySelectorAll('.ai-assistant-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-meaux-cyan/20', 'border-meaux-cyan');
+                btn.classList.add('bg-slate-900/50', 'border-white/5');
+            });
+            const btn = document.querySelector(`[data-ai="${name}"]`);
+            if (btn) {
+                btn.classList.add('active', 'bg-meaux-cyan/20', 'border-meaux-cyan');
+                btn.classList.remove('bg-slate-900/50', 'border-white/5');
+            }
+        }
+
+        function runTerminalCommand() {
+            const input = document.getElementById('terminalInput');
+            const command = input.value.trim();
+            if (!command) return;
+
+            terminalHistory.push(command);
+            const output = document.getElementById('terminalOutput');
+            output.innerHTML += `<div class="text-emerald-400 mb-2"><span class="text-meaux-cyan">$</span> ${command}</div>`;
+            output.innerHTML += `<div class="text-slate-400 mb-2">Command executed: ${command}</div>`;
+
+            input.value = '';
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearTerminal() {
+            document.getElementById('terminalOutput').innerHTML = '';
+        }
+
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const chat = document.getElementById('aiChat');
+            chat.innerHTML += `<div class="text-sm mb-3 p-3 rounded-lg bg-meaux-cyan/10 border-l-2 border-meaux-cyan"><strong class="text-meaux-cyan">You:</strong> <span class="text-slate-300">${message}</span></div>`;
+            chat.innerHTML += `<div class="text-sm mb-3 p-3 rounded-lg bg-purple-500/10 border-l-2 border-purple-500"><strong class="text-purple-400">AI Assistant:</strong> <span class="text-slate-300">I understand you want help with "${message}". Let me assist you with that.</span></div>`;
+
+            input.value = '';
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function openMeshyText() {
+            alert('Opening Meshy AI Text-to-3D...');
+        }
+
+        function openMeshyImage() {
+            alert('Opening Meshy AI Image-to-3D...');
+        }
+
+        function openCloudConvert() {
+            alert('Opening CloudConvert...');
+        }
+
+        function renderHTML() {
+            const code = document.getElementById('htmlCode').value;
+            const preview = document.getElementById('htmlPreview');
+            preview.srcdoc = code;
+        }
+
+        function saveHTMLToR2() {
+            alert('Saving HTML to R2 storage...');
+        }
+
+        function openBrowserRender() {
+            const url = document.getElementById('browserUrl').value;
+            window.open(url, '_blank');
+        }
+
+        function connectMCP() {
+            alert('MCP Server connection toggled');
+        }
+
+        // Theme Management
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('meauxos-theme') || 'dark';
+            applyTheme(savedTheme);
+            document.querySelector(`input[name="theme"][value="${savedTheme}"]`).checked = true;
+        }
+
+        function applyTheme(theme) {
+            const html = document.documentElement;
+            html.classList.remove('dark', 'light', 'brand');
+            html.classList.add(theme);
+            localStorage.setItem('meauxos-theme', theme);
+        }
+
+        function saveSettings() {
+            const theme = document.querySelector('input[name="theme"]:checked').value;
+            applyTheme(theme);
+
+            // Save other settings
+            const email = document.querySelector('input[type="email"]').value;
+            const preferences = {
+                emailNotifications: document.querySelector('input[type="checkbox"]').checked,
+                desktopNotifications: document.querySelectorAll('input[type="checkbox"]')[1]?.checked || false,
+                autoSave: document.querySelectorAll('input[type="checkbox"]')[2]?.checked || false
+            };
+
+            localStorage.setItem('meauxos-email', email);
+            localStorage.setItem('meauxos-preferences', JSON.stringify(preferences));
+
+            // Show success feedback
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Saved!';
+            btn.classList.add('bg-emerald-500');
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.remove('bg-emerald-500');
+            }, 2000);
+        }
+
+        function cancelSettings() {
+            loadTheme();
+            const savedEmail = localStorage.getItem('meauxos-email') || 'admin@meauxaccess.com';
+            document.querySelector('input[type="email"]').value = savedEmail;
+        }
+
+        // Theme radio button handlers
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[name="theme"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    applyTheme(e.target.value);
+                });
+            });
+        });
+
+        // Agent Sam Chat Functions
+        let agentSamAI = 'gemini';
+
+        function toggleAgentSam() {
+            const chat = document.getElementById('agentSamChat');
+            const toggle = document.getElementById('agentSamToggle');
+            if (chat.classList.contains('hidden')) {
+                chat.classList.remove('hidden');
+                toggle.classList.add('hidden');
+            } else {
+                chat.classList.add('hidden');
+                toggle.classList.remove('hidden');
+            }
+        }
+
+        function selectAgentAI(name) {
+            agentSamAI = name;
+            document.querySelectorAll('.agent-ai-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-meaux-cyan/20', 'border-meaux-cyan');
+            });
+            const btn = document.querySelector(`.agent-ai-btn[data-ai="${name}"]`);
+            if (btn) {
+                btn.classList.add('active', 'bg-meaux-cyan/20', 'border-meaux-cyan');
+            }
+        }
+
+        async function sendAgentSamMessage() {
+            const input = document.getElementById('agentSamInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesDiv = document.getElementById('agentSamMessages');
+
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'flex items-start gap-3';
+            userMsg.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">You</div>
+                <div class="flex-1 bg-meaux-cyan/10 border border-meaux-cyan/20 rounded-lg p-3 text-sm text-slate-300">${message}</div>
+            `;
+            messagesDiv.appendChild(userMsg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            input.value = '';
+            input.disabled = true;
+
+            // Get AI response
+            try {
+                const response = await fetch(`/api/ai/${agentSamAI}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: message,
+                        context: 'MeauxOS platform assistant'
+                    })
+                });
+                const data = await response.json();
+
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'flex items-start gap-3';
+                const aiText = data.response || data.candidates?.[0]?.content?.parts?.[0]?.text || 'I understand. Let me help you with that.';
+                aiMsg.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-meaux-cyan to-meaux-blue flex items-center justify-center text-white text-sm font-bold flex-shrink-0">S</div>
+                    <div class="flex-1 bg-slate-800/50 rounded-lg p-3 text-sm text-slate-300">
+                        <strong class="text-meaux-cyan">Agent Sam:</strong> ${aiText}
+                    </div>
+                `;
+                messagesDiv.appendChild(aiMsg);
+            } catch (error) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'flex items-start gap-3';
+                errorMsg.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-meaux-cyan to-meaux-blue flex items-center justify-center text-white text-sm font-bold flex-shrink-0">S</div>
+                    <div class="flex-1 bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-sm text-red-400">
+                        <strong>Error:</strong> ${error.message}
+                    </div>
+                `;
+                messagesDiv.appendChild(errorMsg);
+            }
+
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            input.disabled = false;
+            input.focus();
+        }
+
+        // --- 7. Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTheme(); // Load saved theme
+            renderModules();
+            initGalaxy();
+            initCursor();
+            initRouting();
+            renderHTML(); // Auto-render HTML preview
+
+            // Sidenav Toggles
+            const sidenav = document.getElementById('sidenav');
+            const overlay = document.getElementById('mobileOverlay');
+            function toggleMenu() {
+                const closed = sidenav.classList.contains('-translate-x-full');
+                closed ? sidenav.classList.remove('-translate-x-full') : sidenav.classList.add('-translate-x-full');
+                closed ? overlay.classList.remove('hidden') : setTimeout(() => overlay.classList.add('hidden'), 300);
+                if (closed) setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                else overlay.classList.add('opacity-0');
+            }
+            document.getElementById('mobileMenuBtn').addEventListener('click', toggleMenu);
+            document.getElementById('closeSidebar').addEventListener('click', toggleMenu);
+            overlay.addEventListener('click', toggleMenu);
+
+            // Remove Loader
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 600);
+            }, 1000);
+        });
+    </script>
+</body>
+
+</html>
