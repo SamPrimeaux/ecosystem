@@ -1,0 +1,32 @@
+{
+  "name": "@meauxos/ecosystem",
+  "version": "1.0.0",
+  "description": "MeauxOS multi-brand infrastructure platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'Use: npm run dev --workspace=<app-name>'",
+    "build": "echo 'Build complete'",
+    "test": "echo 'No tests configured yet'",
+    "lint": "echo 'No linting configured yet'",
+    "typecheck": "echo 'No typecheck configured yet'",
+    "backup:d1": "scripts/backup-d1.sh",
+    "sync:supabase": "scripts/sync-to-supabase.sh"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamPrimeaux/ecosystem.git"
+  },
+  "author": "Sam Primeaux",
+  "license": "MIT"
+}
