@@ -1184,6 +1184,142 @@
                         </div>
                     </section>
 
+                    <!-- MeauxDOC Section - Document Storage with R2 -->
+                    <section id="meauxdoc-section" class="page-section hidden">
+                        <!-- Header -->
+                        <div class="flex items-end justify-between mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-white mb-2">MeauxDOC</h2>
+                                <p class="text-slate-400">Document storage • <span id="doc-path" class="text-meaux-cyan font-mono">/</span></p>
+                            </div>
+                            <div class="flex gap-3">
+                                <button onclick="createDocFolder()" class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-slate-300 text-sm font-semibold hover:bg-slate-700/50 transition-all interactable flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                                    New Folder
+                                </button>
+                                <button onclick="document.getElementById('doc-file-input').click()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white text-sm font-semibold shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all interactable flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                                    Upload Files
+                                </button>
+                                <input type="file" id="doc-file-input" multiple class="hidden" onchange="handleDocUpload(event)">
+                            </div>
+                        </div>
+
+                        <!-- Drag & Drop Zone + File Browser -->
+                        <div class="grid grid-cols-12 gap-6" style="min-height: calc(100vh - 250px);">
+                            
+                            <!-- Sidebar - Quick Access -->
+                            <div class="col-span-3 hero-glass rounded-2xl border border-white/5 p-4 flex flex-col">
+                                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Quick Access</h3>
+                                <div class="space-y-1 flex-1">
+                                    <button onclick="navigateDocFolder('')" class="w-full text-left px-3 py-2 rounded-lg bg-meaux-cyan/10 text-meaux-cyan text-sm font-medium flex items-center gap-3 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                                        All Files
+                                    </button>
+                                    <button onclick="navigateDocFolder('documents')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium flex items-center gap-3 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        Documents
+                                    </button>
+                                    <button onclick="navigateDocFolder('images')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium flex items-center gap-3 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        Images
+                                    </button>
+                                    <button onclick="navigateDocFolder('backups')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium flex items-center gap-3 transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+                                        Backups
+                                    </button>
+                                </div>
+
+                                <!-- Storage Stats -->
+                                <div class="mt-4 p-3 rounded-xl bg-slate-800/30 border border-white/5">
+                                    <div class="flex justify-between text-xs mb-2">
+                                        <span class="text-slate-500">Storage Used</span>
+                                        <span id="doc-storage-used" class="text-white font-mono">0 MB</span>
+                                    </div>
+                                    <div class="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                        <div id="doc-storage-bar" class="h-full bg-gradient-to-r from-meaux-cyan to-meaux-blue rounded-full transition-all" style="width: 0%"></div>
+                                    </div>
+                                    <div class="text-[10px] text-slate-600 mt-1">R2: meauxos-documents</div>
+                                </div>
+                            </div>
+
+                            <!-- Main File Browser -->
+                            <div class="col-span-9 hero-glass rounded-2xl border border-white/5 flex flex-col overflow-hidden">
+                                
+                                <!-- Breadcrumb & View Toggle -->
+                                <div class="p-4 border-b border-white/5 flex items-center justify-between">
+                                    <div class="flex items-center gap-2" id="doc-breadcrumb">
+                                        <button onclick="navigateDocFolder('')" class="text-meaux-cyan hover:underline text-sm">Root</button>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="setDocView('grid')" id="doc-view-grid" class="p-2 rounded-lg bg-meaux-cyan/10 text-meaux-cyan transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                                        </button>
+                                        <button onclick="setDocView('list')" id="doc-view-list" class="p-2 rounded-lg hover:bg-slate-800/50 text-slate-400 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                                        </button>
+                                        <button onclick="loadDocuments()" class="p-2 rounded-lg hover:bg-slate-800/50 text-slate-400 hover:text-white transition-colors" title="Refresh">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Drag & Drop Zone -->
+                                <div id="doc-drop-zone" 
+                                    class="flex-1 overflow-y-auto p-4 transition-colors"
+                                    ondragover="handleDocDragOver(event)"
+                                    ondragleave="handleDocDragLeave(event)"
+                                    ondrop="handleDocDrop(event)">
+                                    
+                                    <!-- Empty State / Drop Zone -->
+                                    <div id="doc-empty-state" class="h-full flex flex-col items-center justify-center border-2 border-dashed border-slate-700 rounded-2xl p-8 transition-colors">
+                                        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-meaux-cyan/10 to-meaux-blue/10 flex items-center justify-center mb-4">
+                                            <svg class="w-10 h-10 text-meaux-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-semibold text-white mb-2">Drop files here</h3>
+                                        <p class="text-sm text-slate-500 text-center mb-4">or click "Upload Files" to browse<br>Files will be stored in R2</p>
+                                        <div class="flex gap-4 text-xs text-slate-600">
+                                            <span>📄 Documents</span>
+                                            <span>🖼️ Images</span>
+                                            <span>📦 Archives</span>
+                                            <span>🎬 Media</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- File Grid (populated by JS) -->
+                                    <div id="doc-file-grid" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                        <!-- Files will be injected here -->
+                                    </div>
+
+                                    <!-- File List (populated by JS) -->
+                                    <div id="doc-file-list" class="hidden space-y-1">
+                                        <!-- Files will be injected here -->
+                                    </div>
+                                </div>
+
+                                <!-- Upload Progress -->
+                                <div id="doc-upload-progress" class="hidden p-4 border-t border-white/5 bg-slate-800/30">
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex-1">
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span id="doc-upload-name" class="text-white truncate">Uploading...</span>
+                                                <span id="doc-upload-percent" class="text-meaux-cyan">0%</span>
+                                            </div>
+                                            <div class="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                                <div id="doc-upload-bar" class="h-full bg-gradient-to-r from-meaux-cyan to-meaux-blue rounded-full transition-all" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                        <button onclick="cancelDocUpload()" class="p-2 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-white transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- DevOps Studio Section -->
                     <section id="devops-section" class="page-section hidden"
                         style="height: 100vh; width: 100%; position: fixed; top: 0; left: 0; z-index: 1000; background: #020617;">
@@ -1800,6 +1936,9 @@
             if (window.location.hash === '#meauxstats') {
                 loadStats();
             }
+            if (window.location.hash === '#meauxdoc') {
+                loadDocuments();
+            }
         }
 
         // Listen for hash changes
@@ -2178,6 +2317,306 @@
                 `;
                 tasksList.insertAdjacentHTML('afterbegin', newTask);
             }
+        }
+
+        // --- MeauxDOC Functions ---
+        let currentDocFolder = '';
+        let docViewMode = 'grid';
+        let docUploadController = null;
+
+        // File type icons with MeauxOS branding
+        const docIcons = {
+            folder: `<svg class="w-12 h-12 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M10 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2z"/><text x="12" y="15" font-size="6" font-weight="bold" text-anchor="middle" fill="white">M</text></svg>`,
+            pdf: `<svg class="w-12 h-12 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6" fill="none" stroke="currentColor" stroke-width="1"/><text x="12" y="16" font-size="5" font-weight="bold" text-anchor="middle" fill="white">PDF</text></svg>`,
+            word: `<svg class="w-12 h-12 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><text x="12" y="16" font-size="5" font-weight="bold" text-anchor="middle" fill="white">DOC</text></svg>`,
+            excel: `<svg class="w-12 h-12 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><text x="12" y="16" font-size="5" font-weight="bold" text-anchor="middle" fill="white">XLS</text></svg>`,
+            image: `<svg class="w-12 h-12 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="white"/><path d="M21 15l-5-5L5 21" stroke="white" stroke-width="1.5" fill="none"/></svg>`,
+            video: `<svg class="w-12 h-12 text-pink-500" fill="currentColor" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3V9z" fill="white"/></svg>`,
+            audio: `<svg class="w-12 h-12 text-orange-500" fill="currentColor" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+            code: `<svg class="w-12 h-12 text-meaux-cyan" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M9 13l-2 2 2 2M15 13l2 2-2 2M12 11l-1 6" stroke="white" stroke-width="1.5" fill="none"/></svg>`,
+            json: `<svg class="w-12 h-12 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><text x="12" y="16" font-size="4" font-weight="bold" text-anchor="middle" fill="white">{}</text></svg>`,
+            archive: `<svg class="w-12 h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/><path d="M12 4v16M10 8h4M10 12h4" stroke="white" stroke-width="1"/></svg>`,
+            markdown: `<svg class="w-12 h-12 text-slate-300" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><text x="12" y="16" font-size="5" font-weight="bold" text-anchor="middle" fill="white">MD</text></svg>`,
+            file: `<svg class="w-12 h-12 text-slate-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6" fill="none" stroke="currentColor" stroke-width="1"/></svg>`
+        };
+
+        async function loadDocuments() {
+            try {
+                const response = await fetch(`${MEAUXOS_API}/api/docs/list/${currentDocFolder}`);
+                const data = await response.json();
+                
+                renderDocFiles(data.files || []);
+                updateDocBreadcrumb();
+                document.getElementById('doc-path').textContent = '/' + (currentDocFolder || '');
+                
+                // Update storage display (estimate)
+                const totalSize = (data.files || []).reduce((sum, f) => sum + (f.size || 0), 0);
+                document.getElementById('doc-storage-used').textContent = formatFileSize(totalSize);
+                document.getElementById('doc-storage-bar').style.width = Math.min((totalSize / (10 * 1024 * 1024 * 1024)) * 100, 100) + '%';
+                
+            } catch (error) {
+                console.error('Failed to load documents:', error);
+            }
+        }
+
+        function renderDocFiles(files) {
+            const grid = document.getElementById('doc-file-grid');
+            const list = document.getElementById('doc-file-list');
+            const empty = document.getElementById('doc-empty-state');
+            
+            if (files.length === 0) {
+                empty.classList.remove('hidden');
+                grid.classList.add('hidden');
+                list.classList.add('hidden');
+                return;
+            }
+            
+            empty.classList.add('hidden');
+            
+            if (docViewMode === 'grid') {
+                grid.classList.remove('hidden');
+                list.classList.add('hidden');
+                grid.innerHTML = files.map(f => renderDocGridItem(f)).join('');
+            } else {
+                list.classList.remove('hidden');
+                grid.classList.add('hidden');
+                list.innerHTML = files.map(f => renderDocListItem(f)).join('');
+            }
+        }
+
+        function renderDocGridItem(file) {
+            const icon = docIcons[file.icon] || docIcons.file;
+            const isFolder = file.type === 'folder';
+            
+            return `
+                <div class="group p-4 rounded-xl bg-slate-800/30 border border-white/5 hover:border-meaux-cyan/30 cursor-pointer transition-all hover:scale-105"
+                    onclick="${isFolder ? `navigateDocFolder('${file.key.replace(/\/$/, '')}')` : `previewDoc('${file.key}')`}">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="mb-3 transform group-hover:scale-110 transition-transform">
+                            ${icon}
+                        </div>
+                        <div class="text-sm font-medium text-white truncate w-full" title="${file.name}">${file.name}</div>
+                        <div class="text-xs text-slate-500 mt-1">
+                            ${isFolder ? 'Folder' : formatFileSize(file.size)}
+                        </div>
+                    </div>
+                    ${!isFolder ? `
+                        <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                            <button onclick="event.stopPropagation(); downloadDoc('${file.key}')" class="p-1.5 rounded bg-slate-700/80 hover:bg-meaux-cyan text-white">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            </button>
+                            <button onclick="event.stopPropagation(); deleteDoc('${file.key}')" class="p-1.5 rounded bg-slate-700/80 hover:bg-red-500 text-white">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function renderDocListItem(file) {
+            const isFolder = file.type === 'folder';
+            const iconSmall = {
+                folder: '📁', pdf: '📕', word: '📘', excel: '📗', image: '🖼️', 
+                video: '🎬', audio: '🎵', code: '💻', json: '📋', archive: '📦', 
+                markdown: '📝', file: '📄'
+            };
+            
+            return `
+                <div class="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-800/50 cursor-pointer transition-colors group"
+                    onclick="${isFolder ? `navigateDocFolder('${file.key.replace(/\/$/, '')}')` : `previewDoc('${file.key}')`}">
+                    <span class="text-2xl">${iconSmall[file.icon] || '📄'}</span>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm font-medium text-white truncate">${file.name}</div>
+                        <div class="text-xs text-slate-500">${isFolder ? 'Folder' : file.contentType}</div>
+                    </div>
+                    <div class="text-xs text-slate-500 text-right">
+                        ${isFolder ? '' : formatFileSize(file.size)}
+                    </div>
+                    <div class="text-xs text-slate-600">
+                        ${file.modified ? new Date(file.modified).toLocaleDateString() : ''}
+                    </div>
+                    ${!isFolder ? `
+                        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="event.stopPropagation(); downloadDoc('${file.key}')" class="p-1.5 rounded hover:bg-meaux-cyan/20 text-slate-400 hover:text-meaux-cyan">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            </button>
+                            <button onclick="event.stopPropagation(); deleteDoc('${file.key}')" class="p-1.5 rounded hover:bg-red-500/20 text-slate-400 hover:text-red-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function navigateDocFolder(folder) {
+            currentDocFolder = folder;
+            loadDocuments();
+        }
+
+        function updateDocBreadcrumb() {
+            const breadcrumb = document.getElementById('doc-breadcrumb');
+            const parts = currentDocFolder.split('/').filter(p => p);
+            
+            let html = '<button onclick="navigateDocFolder(\'\')" class="text-meaux-cyan hover:underline text-sm">Root</button>';
+            let path = '';
+            
+            for (const part of parts) {
+                path += (path ? '/' : '') + part;
+                html += `<span class="text-slate-600 mx-1">/</span>`;
+                html += `<button onclick="navigateDocFolder('${path}')" class="text-slate-400 hover:text-meaux-cyan hover:underline text-sm">${part}</button>`;
+            }
+            
+            breadcrumb.innerHTML = html;
+        }
+
+        function setDocView(mode) {
+            docViewMode = mode;
+            document.getElementById('doc-view-grid').classList.toggle('bg-meaux-cyan/10', mode === 'grid');
+            document.getElementById('doc-view-grid').classList.toggle('text-meaux-cyan', mode === 'grid');
+            document.getElementById('doc-view-list').classList.toggle('bg-meaux-cyan/10', mode === 'list');
+            document.getElementById('doc-view-list').classList.toggle('text-meaux-cyan', mode === 'list');
+            loadDocuments();
+        }
+
+        // Drag & Drop Handlers
+        function handleDocDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('doc-drop-zone').classList.add('bg-meaux-cyan/5');
+            document.getElementById('doc-empty-state')?.classList.add('border-meaux-cyan', 'bg-meaux-cyan/5');
+        }
+
+        function handleDocDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('doc-drop-zone').classList.remove('bg-meaux-cyan/5');
+            document.getElementById('doc-empty-state')?.classList.remove('border-meaux-cyan', 'bg-meaux-cyan/5');
+        }
+
+        async function handleDocDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('doc-drop-zone').classList.remove('bg-meaux-cyan/5');
+            document.getElementById('doc-empty-state')?.classList.remove('border-meaux-cyan', 'bg-meaux-cyan/5');
+            
+            const files = Array.from(e.dataTransfer.files);
+            if (files.length > 0) {
+                await uploadDocFiles(files);
+            }
+        }
+
+        async function handleDocUpload(e) {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                await uploadDocFiles(files);
+            }
+            e.target.value = ''; // Reset input
+        }
+
+        async function uploadDocFiles(files) {
+            const progress = document.getElementById('doc-upload-progress');
+            const progressBar = document.getElementById('doc-upload-bar');
+            const progressName = document.getElementById('doc-upload-name');
+            const progressPercent = document.getElementById('doc-upload-percent');
+            
+            progress.classList.remove('hidden');
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                progressName.textContent = `Uploading ${file.name} (${i + 1}/${files.length})`;
+                progressPercent.textContent = '0%';
+                progressBar.style.width = '0%';
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('folder', currentDocFolder);
+                    
+                    const response = await fetch(`${MEAUXOS_API}/api/docs/upload`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (response.ok) {
+                        progressBar.style.width = '100%';
+                        progressPercent.textContent = '100%';
+                    } else {
+                        console.error('Upload failed:', await response.text());
+                    }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                }
+            }
+            
+            setTimeout(() => {
+                progress.classList.add('hidden');
+                loadDocuments();
+            }, 500);
+        }
+
+        function downloadDoc(key) {
+            window.open(`${MEAUXOS_API}/api/docs/download/${encodeURIComponent(key)}`, '_blank');
+        }
+
+        async function deleteDoc(key) {
+            if (!confirm(`Delete "${key.split('/').pop()}"?`)) return;
+            
+            try {
+                const response = await fetch(`${MEAUXOS_API}/api/docs/delete/${encodeURIComponent(key)}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    loadDocuments();
+                } else {
+                    alert('Failed to delete file');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+            }
+        }
+
+        async function createDocFolder() {
+            const name = prompt('Enter folder name:');
+            if (!name) return;
+            
+            try {
+                const response = await fetch(`${MEAUXOS_API}/api/docs/folder`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, parent: currentDocFolder })
+                });
+                
+                if (response.ok) {
+                    loadDocuments();
+                } else {
+                    alert('Failed to create folder');
+                }
+            } catch (error) {
+                console.error('Create folder error:', error);
+            }
+        }
+
+        function previewDoc(key) {
+            // Open in new tab for now - could add modal preview later
+            window.open(`${MEAUXOS_API}/api/docs/download/${encodeURIComponent(key)}`, '_blank');
+        }
+
+        function cancelDocUpload() {
+            if (docUploadController) {
+                docUploadController.abort();
+            }
+            document.getElementById('doc-upload-progress').classList.add('hidden');
         }
 
         function renderHTML() {

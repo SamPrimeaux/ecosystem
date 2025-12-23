@@ -6,14 +6,15 @@
 interface Env {
   DB: D1Database;
   R2_INFRA: R2Bucket;
+  R2_DOCS: R2Bucket;
   CORS_ORIGIN: string;
 }
 
 // CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, X-Filename, X-Folder',
   'Content-Type': 'application/json',
 };
 
@@ -54,6 +55,26 @@ export default {
         return json({ status: 'ok', timestamp: new Date().toISOString() });
       }
 
+      // Document Management API
+      if (path === '/api/docs/list' || path.startsWith('/api/docs/list/')) {
+        const folder = path.replace('/api/docs/list', '').replace(/^\//, '') || '';
+        return await listDocuments(env, folder);
+      }
+      if (path === '/api/docs/upload' && request.method === 'POST') {
+        return await uploadDocument(env, request);
+      }
+      if (path.startsWith('/api/docs/download/')) {
+        const key = path.replace('/api/docs/download/', '');
+        return await downloadDocument(env, key);
+      }
+      if (path.startsWith('/api/docs/delete/') && request.method === 'DELETE') {
+        const key = path.replace('/api/docs/delete/', '');
+        return await deleteDocument(env, key);
+      }
+      if (path === '/api/docs/folder' && request.method === 'POST') {
+        return await createFolder(env, request);
+      }
+
       return json({ error: 'Not found', endpoints: [
         '/api/analytics/overview',
         '/api/analytics/projects',
@@ -62,6 +83,10 @@ export default {
         '/api/analytics/r2',
         '/api/analytics/builds',
         '/api/analytics/timeline',
+        '/api/docs/list',
+        '/api/docs/upload (POST)',
+        '/api/docs/download/:key',
+        '/api/docs/delete/:key (DELETE)',
         '/api/health'
       ]}, 404);
     } catch (error: any) {
@@ -293,4 +318,256 @@ async function getTimeline(env: Env): Promise<Response> {
   ).slice(0, 20);
 
   return json({ timeline });
+}
+
+// ============================================
+// Document Management Functions (R2_DOCS)
+// ============================================
+
+interface DocFile {
+  key: string;
+  name: string;
+  type: 'file' | 'folder';
+  size: number;
+  modified: string;
+  contentType: string;
+  icon: string;
+}
+
+function getFileIcon(filename: string, contentType: string): string {
+  const ext = filename.split('.').pop()?.toLowerCase() || '';
+  const iconMap: Record<string, string> = {
+    // Documents
+    'pdf': 'pdf',
+    'doc': 'word',
+    'docx': 'word',
+    'txt': 'text',
+    'md': 'markdown',
+    'rtf': 'text',
+    // Spreadsheets
+    'xls': 'excel',
+    'xlsx': 'excel',
+    'csv': 'csv',
+    // Presentations
+    'ppt': 'powerpoint',
+    'pptx': 'powerpoint',
+    // Images
+    'jpg': 'image',
+    'jpeg': 'image',
+    'png': 'image',
+    'gif': 'image',
+    'svg': 'image',
+    'webp': 'image',
+    // Code
+    'js': 'code',
+    'ts': 'code',
+    'jsx': 'code',
+    'tsx': 'code',
+    'html': 'code',
+    'css': 'code',
+    'json': 'json',
+    'py': 'code',
+    'go': 'code',
+    'rs': 'code',
+    // Archives
+    'zip': 'archive',
+    'tar': 'archive',
+    'gz': 'archive',
+    'rar': 'archive',
+    // Video
+    'mp4': 'video',
+    'mov': 'video',
+    'avi': 'video',
+    'webm': 'video',
+    // Audio
+    'mp3': 'audio',
+    'wav': 'audio',
+    'ogg': 'audio',
+    // Design
+    'fig': 'figma',
+    'sketch': 'sketch',
+    'psd': 'photoshop',
+    'ai': 'illustrator',
+  };
+  return iconMap[ext] || 'file';
+}
+
+async function listDocuments(env: Env, folder: string): Promise<Response> {
+  try {
+    const prefix = folder ? `${folder}/` : '';
+    const listed = await env.R2_DOCS.list({ prefix, delimiter: '/' });
+    
+    const files: DocFile[] = [];
+    
+    // Add folders (commonPrefixes)
+    if (listed.delimitedPrefixes) {
+      for (const prefix of listed.delimitedPrefixes) {
+        const name = prefix.replace(/\/$/, '').split('/').pop() || prefix;
+        files.push({
+          key: prefix,
+          name,
+          type: 'folder',
+          size: 0,
+          modified: '',
+          contentType: 'folder',
+          icon: 'folder'
+        });
+      }
+    }
+    
+    // Add files
+    for (const obj of listed.objects) {
+      // Skip the folder placeholder itself
+      if (obj.key.endsWith('/')) continue;
+      
+      const name = obj.key.split('/').pop() || obj.key;
+      files.push({
+        key: obj.key,
+        name,
+        type: 'file',
+        size: obj.size,
+        modified: obj.uploaded.toISOString(),
+        contentType: obj.httpMetadata?.contentType || 'application/octet-stream',
+        icon: getFileIcon(name, obj.httpMetadata?.contentType || '')
+      });
+    }
+    
+    // Sort: folders first, then by name
+    files.sort((a, b) => {
+      if (a.type !== b.type) return a.type === 'folder' ? -1 : 1;
+      return a.name.localeCompare(b.name);
+    });
+    
+    return json({
+      folder: folder || '/',
+      files,
+      total: files.length,
+      truncated: listed.truncated
+    });
+  } catch (error: any) {
+    return json({ error: error.message }, 500);
+  }
+}
+
+async function uploadDocument(env: Env, request: Request): Promise<Response> {
+  try {
+    const contentType = request.headers.get('Content-Type') || '';
+    
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      const file = formData.get('file') as File;
+      const folder = formData.get('folder') as string || '';
+      
+      if (!file) {
+        return json({ error: 'No file provided' }, 400);
+      }
+      
+      const key = folder ? `${folder}/${file.name}` : file.name;
+      const arrayBuffer = await file.arrayBuffer();
+      
+      await env.R2_DOCS.put(key, arrayBuffer, {
+        httpMetadata: {
+          contentType: file.type || 'application/octet-stream'
+        },
+        customMetadata: {
+          originalName: file.name,
+          uploadedAt: new Date().toISOString()
+        }
+      });
+      
+      // Track in D1
+      await env.DB.prepare(`
+        INSERT OR REPLACE INTO r2_objects (key, bucket_name, size, content_type, uploaded_at)
+        VALUES (?, 'meauxos-documents', ?, ?, datetime('now'))
+      `).bind(key, file.size, file.type).run();
+      
+      return json({
+        success: true,
+        key,
+        name: file.name,
+        size: file.size,
+        contentType: file.type
+      });
+    } else {
+      // Raw body upload
+      const filename = request.headers.get('X-Filename') || 'untitled';
+      const folder = request.headers.get('X-Folder') || '';
+      const key = folder ? `${folder}/${filename}` : filename;
+      
+      const body = await request.arrayBuffer();
+      
+      await env.R2_DOCS.put(key, body, {
+        httpMetadata: {
+          contentType: contentType || 'application/octet-stream'
+        }
+      });
+      
+      return json({
+        success: true,
+        key,
+        name: filename,
+        size: body.byteLength
+      });
+    }
+  } catch (error: any) {
+    return json({ error: error.message }, 500);
+  }
+}
+
+async function downloadDocument(env: Env, key: string): Promise<Response> {
+  try {
+    const object = await env.R2_DOCS.get(decodeURIComponent(key));
+    
+    if (!object) {
+      return json({ error: 'File not found' }, 404);
+    }
+    
+    const headers = new Headers();
+    headers.set('Content-Type', object.httpMetadata?.contentType || 'application/octet-stream');
+    headers.set('Content-Disposition', `attachment; filename="${key.split('/').pop()}"`);
+    headers.set('Access-Control-Allow-Origin', '*');
+    
+    return new Response(object.body, { headers });
+  } catch (error: any) {
+    return json({ error: error.message }, 500);
+  }
+}
+
+async function deleteDocument(env: Env, key: string): Promise<Response> {
+  try {
+    await env.R2_DOCS.delete(decodeURIComponent(key));
+    
+    // Remove from D1 tracking
+    await env.DB.prepare(`
+      DELETE FROM r2_objects WHERE key = ? AND bucket_name = 'meauxos-documents'
+    `).bind(key).run();
+    
+    return json({ success: true, deleted: key });
+  } catch (error: any) {
+    return json({ error: error.message }, 500);
+  }
+}
+
+async function createFolder(env: Env, request: Request): Promise<Response> {
+  try {
+    const { name, parent } = await request.json() as { name: string; parent?: string };
+    
+    if (!name) {
+      return json({ error: 'Folder name required' }, 400);
+    }
+    
+    const key = parent ? `${parent}/${name}/` : `${name}/`;
+    
+    // Create empty object as folder placeholder
+    await env.R2_DOCS.put(key, new Uint8Array(0), {
+      customMetadata: {
+        isFolder: 'true',
+        createdAt: new Date().toISOString()
+      }
+    });
+    
+    return json({ success: true, folder: key });
+  } catch (error: any) {
+    return json({ error: error.message }, 500);
+  }
 }

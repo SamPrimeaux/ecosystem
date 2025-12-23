@@ -13,6 +13,10 @@ database_id = "d8261777-9384-44f7-924d-c92247d55b46"
 binding = "R2_INFRA"
 bucket_name = "allinfrastructure"
 
+[[r2_buckets]]
+binding = "R2_DOCS"
+bucket_name = "meauxos-documents"
+
 # CORS headers for dashboard access
 [vars]
 CORS_ORIGIN = "*"
