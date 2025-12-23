@@ -1,0 +1,18 @@
+name = "meauxos-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "meauxos"
+database_id = "d8261777-9384-44f7-924d-c92247d55b46"
+
+# R2 Bucket bindings for direct access
+[[r2_buckets]]
+binding = "R2_INFRA"
+bucket_name = "allinfrastructure"
+
+# CORS headers for dashboard access
+[vars]
+CORS_ORIGIN = "*"

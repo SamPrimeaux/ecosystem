@@ -739,6 +739,134 @@
                         </div>
                     </section>
 
+                    <!-- MeauxStats Section - REAL Analytics from D1 -->
+                    <section id="meauxstats-section" class="page-section hidden">
+                        <div class="flex items-end justify-between mb-8">
+                            <div>
+                                <h2 class="text-2xl font-bold text-white mb-2">MeauxStats</h2>
+                                <p class="text-slate-400">Real-time analytics from D1 • <span id="stats-timestamp" class="text-meaux-cyan">Loading...</span></p>
+                            </div>
+                            <button onclick="loadStats()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white text-sm font-semibold shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all interactable">
+                                ↻ Refresh Data
+                            </button>
+                        </div>
+
+                        <!-- Stats Cards - Dynamic -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                            <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-meaux-cyan/20 to-meaux-blue/20 flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-meaux-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                        </svg>
+                                    </div>
+                                    <span class="text-xs text-meaux-cyan bg-meaux-cyan/10 px-2 py-1 rounded-full">Live</span>
+                                </div>
+                                <div id="stat-projects" class="text-3xl font-bold text-white mb-1">--</div>
+                                <div class="text-sm text-slate-400">Total Projects</div>
+                            </div>
+                            <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-400/20 to-violet-600/20 flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
+                                        </svg>
+                                    </div>
+                                    <span id="stat-workers-badge" class="text-xs text-violet-400 bg-violet-500/10 px-2 py-1 rounded-full">--</span>
+                                </div>
+                                <div id="stat-workers" class="text-3xl font-bold text-white mb-1">--</div>
+                                <div class="text-sm text-slate-400">Workers</div>
+                            </div>
+                            <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/20 flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                                        </svg>
+                                    </div>
+                                    <span id="stat-r2-badge" class="text-xs text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full">--</span>
+                                </div>
+                                <div id="stat-r2" class="text-3xl font-bold text-white mb-1">--</div>
+                                <div class="text-sm text-slate-400">R2 Buckets</div>
+                            </div>
+                            <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400/20 to-emerald-600/20 flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">USD</span>
+                                </div>
+                                <div id="stat-cost" class="text-3xl font-bold text-white mb-1">$--</div>
+                                <div class="text-sm text-slate-400">Total Cost</div>
+                            </div>
+                        </div>
+
+                        <!-- Secondary Stats Row -->
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                            <div class="hero-glass rounded-xl p-4 border border-white/5 text-center">
+                                <div id="stat-pages" class="text-2xl font-bold text-meaux-cyan">--</div>
+                                <div class="text-xs text-slate-500">Pages</div>
+                            </div>
+                            <div class="hero-glass rounded-xl p-4 border border-white/5 text-center">
+                                <div id="stat-apps" class="text-2xl font-bold text-purple-400">--</div>
+                                <div class="text-xs text-slate-500">Apps</div>
+                            </div>
+                            <div class="hero-glass rounded-xl p-4 border border-white/5 text-center">
+                                <div id="stat-users" class="text-2xl font-bold text-amber-400">--</div>
+                                <div class="text-xs text-slate-500">Users</div>
+                            </div>
+                            <div class="hero-glass rounded-xl p-4 border border-white/5 text-center">
+                                <div id="stat-tokens" class="text-2xl font-bold text-emerald-400">--</div>
+                                <div class="text-xs text-slate-500">AI Tokens</div>
+                            </div>
+                            <div class="hero-glass rounded-xl p-4 border border-white/5 text-center">
+                                <div id="stat-brands" class="text-2xl font-bold text-pink-400">--</div>
+                                <div class="text-xs text-slate-500">Brands</div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Grid -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <!-- Projects by Type -->
+                            <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                                <h3 class="text-lg font-semibold text-white mb-4">Projects by Type</h3>
+                                <div id="chart-by-type" class="space-y-4">
+                                    <div class="animate-pulse">
+                                        <div class="h-2 bg-slate-700 rounded mb-4"></div>
+                                        <div class="h-2 bg-slate-700 rounded mb-4 w-3/4"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Projects by Brand -->
+                            <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                                <h3 class="text-lg font-semibold text-white mb-4">Projects by Brand</h3>
+                                <div id="chart-by-brand" class="space-y-4">
+                                    <div class="animate-pulse">
+                                        <div class="h-2 bg-slate-700 rounded mb-4"></div>
+                                        <div class="h-2 bg-slate-700 rounded mb-4 w-3/4"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Deployments -->
+                        <div class="hero-glass rounded-2xl p-6 border border-white/5">
+                            <h3 class="text-lg font-semibold text-white mb-4">Recent Deployments</h3>
+                            <div id="recent-deployments" class="space-y-3">
+                                <div class="animate-pulse flex items-center gap-4 p-3 bg-slate-800/30 rounded-xl">
+                                    <div class="w-10 h-10 bg-slate-700 rounded-lg"></div>
+                                    <div class="flex-1">
+                                        <div class="h-4 bg-slate-700 rounded w-1/3 mb-2"></div>
+                                        <div class="h-3 bg-slate-700 rounded w-1/2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- DevOps Studio Section -->
                     <section id="devops-section" class="page-section hidden"
                         style="height: 100vh; width: 100%; position: fixed; top: 0; left: 0; z-index: 1000; background: #020617;">
@@ -1350,6 +1478,11 @@
                     link.classList.add('bg-meaux-cyan/10', 'text-meaux-cyan', 'border-meaux-cyan/10');
                 }
             });
+
+            // Auto-load data for specific sections
+            if (window.location.hash === '#meauxstats') {
+                loadStats();
+            }
         }
 
         // Listen for hash changes
@@ -1409,6 +1542,122 @@
 
         function openMeshyImage() {
             alert('Opening Meshy AI Image-to-3D...');
+        }
+
+        // --- MeauxStats Real Analytics ---
+        const MEAUXOS_API = 'https://meauxos-api.meauxbility.workers.dev';
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${MEAUXOS_API}/api/analytics/overview`);
+                const data = await response.json();
+                
+                if (data.overview) {
+                    const o = data.overview;
+                    
+                    // Update main stats
+                    document.getElementById('stat-projects').textContent = o.total_projects?.toLocaleString() || '0';
+                    
+                    // Find workers count from by_type
+                    const workers = data.by_type?.find(t => t.type === 'worker')?.count || 0;
+                    const pages = data.by_type?.find(t => t.type === 'pages')?.count || 0;
+                    document.getElementById('stat-workers').textContent = workers.toLocaleString();
+                    document.getElementById('stat-workers-badge').textContent = workers;
+                    document.getElementById('stat-pages').textContent = pages.toLocaleString();
+                    
+                    document.getElementById('stat-r2').textContent = o.r2_buckets_tracked?.toLocaleString() || '0';
+                    document.getElementById('stat-r2-badge').textContent = o.r2_objects || '0';
+                    
+                    document.getElementById('stat-cost').textContent = `$${(o.total_cost || 0).toFixed(2)}`;
+                    document.getElementById('stat-apps').textContent = o.total_apps?.toLocaleString() || '0';
+                    document.getElementById('stat-users').textContent = o.total_users?.toLocaleString() || '0';
+                    document.getElementById('stat-tokens').textContent = formatNumber(o.total_tokens || 0);
+                    document.getElementById('stat-brands').textContent = o.total_brands?.toLocaleString() || '0';
+                    
+                    // Timestamp
+                    document.getElementById('stats-timestamp').textContent = new Date(data.generated_at).toLocaleTimeString();
+                }
+                
+                // Render charts
+                if (data.by_type) {
+                    renderBarChart('chart-by-type', data.by_type, 'type', 'count', ['from-violet-400', 'to-violet-600']);
+                }
+                if (data.by_brand) {
+                    renderBarChart('chart-by-brand', data.by_brand, 'brand', 'count', ['from-meaux-cyan', 'to-meaux-blue']);
+                }
+                
+                // Render recent deployments
+                if (data.recent_deployments) {
+                    renderDeployments(data.recent_deployments);
+                }
+                
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+                document.getElementById('stats-timestamp').textContent = 'Error loading data';
+            }
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        function renderBarChart(containerId, data, labelKey, valueKey, gradientClasses) {
+            const container = document.getElementById(containerId);
+            if (!container || !data.length) return;
+            
+            const maxValue = Math.max(...data.map(d => d[valueKey]));
+            const colors = [
+                'from-meaux-cyan to-meaux-blue',
+                'from-violet-400 to-violet-600',
+                'from-emerald-400 to-emerald-600',
+                'from-amber-400 to-amber-600',
+                'from-pink-400 to-pink-600',
+                'from-slate-400 to-slate-600'
+            ];
+            
+            container.innerHTML = data.slice(0, 6).map((item, i) => {
+                const pct = (item[valueKey] / maxValue) * 100;
+                const color = colors[i % colors.length];
+                return `
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-slate-400 capitalize">${item[labelKey]}</span>
+                            <span class="text-white font-mono">${item[valueKey]}</span>
+                        </div>
+                        <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r ${color} rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderDeployments(deployments) {
+            const container = document.getElementById('recent-deployments');
+            if (!container || !deployments.length) return;
+            
+            const statusColors = {
+                success: 'bg-emerald-500',
+                failed: 'bg-red-500',
+                pending: 'bg-amber-500',
+                building: 'bg-meaux-cyan animate-pulse'
+            };
+            
+            container.innerHTML = deployments.map(d => `
+                <div class="flex items-center gap-4 p-3 bg-slate-800/30 rounded-xl hover:bg-slate-800/50 transition-colors">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-meaux-cyan/20 to-meaux-blue/20 flex items-center justify-center">
+                        <div class="w-3 h-3 rounded-full ${statusColors[d.status] || 'bg-slate-500'}"></div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm font-medium text-white truncate">${d.project_id}</div>
+                        <div class="text-xs text-slate-500">${d.platform} • ${new Date(d.created_at).toLocaleDateString()}</div>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded-full ${d.status === 'success' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-400'}">${d.status}</span>
+                </div>
+            `).join('');
+        }
         }
 
         function openCloudConvert() {
