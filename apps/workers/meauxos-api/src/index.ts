@@ -9,6 +9,8 @@ interface Env {
   R2_DOCS: R2Bucket;
   R2_IMAGES: R2Bucket;
   CORS_ORIGIN: string;
+  CF_IMAGES_TOKEN?: string; // Optional: Cloudflare Images API token
+  CF_ACCOUNT_ID?: string;   // Account ID for CF Images
 }
 
 // CORS headers
@@ -99,6 +101,29 @@ export default {
       if (path.startsWith('/api/photos/delete/') && request.method === 'DELETE') {
         const key = decodeURIComponent(path.replace('/api/photos/delete/', ''));
         return await deletePhoto(env, key);
+      }
+
+      // Cloudflare Images API
+      if (path === '/api/cf-images/list') {
+        return await listCFImages(env, url);
+      }
+      if (path === '/api/cf-images/stats') {
+        return await getCFImagesStats(env);
+      }
+      if (path.startsWith('/api/cf-images/delete/') && request.method === 'DELETE') {
+        const imageId = path.replace('/api/cf-images/delete/', '');
+        return await deleteCFImage(env, imageId);
+      }
+      if (path === '/api/cf-images/meta' && request.method === 'POST') {
+        return await updateCFImageMeta(env, request);
+      }
+
+      // Combined photos (R2 + CF Images)
+      if (path === '/api/all-photos/list') {
+        return await listAllPhotos(env, url);
+      }
+      if (path === '/api/all-photos/stats') {
+        return await getAllPhotosStats(env);
       }
 
       return json({ error: 'Not found', endpoints: [
@@ -900,6 +925,318 @@ async function deletePhoto(env: Env, key: string): Promise<Response> {
     await env.DB.prepare('DELETE FROM image_meta WHERE key = ?').bind(key).run();
     
     return json({ success: true, deleted: key });
+  } catch (error: any) {
+    return json({ error: error.message }, 500);
+  }
+}
+
+// ============================================
+// Cloudflare Images API Functions
+// ============================================
+
+const CF_ACCOUNT_ID = 'ede6590ac0d2fb7daf155b35653457b2';
+
+interface CFImage {
+  id: string;
+  filename: string;
+  uploaded: string;
+  variants: string[];
+  meta?: Record<string, string>;
+}
+
+async function callCFImagesAPI(env: Env, endpoint: string, method = 'GET', body?: any): Promise<any> {
+  if (!env.CF_IMAGES_TOKEN) {
+    throw new Error('CF_IMAGES_TOKEN not configured. Run: wrangler secret put CF_IMAGES_TOKEN');
+  }
+
+  const url = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/images/v1${endpoint}`;
+  
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Authorization': `Bearer ${env.CF_IMAGES_TOKEN}`,
+      'Content-Type': 'application/json'
+    }
+  };
+
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+
+  const res = await fetch(url, options);
+  const data = await res.json();
+
+  if (!data.success) {
+    throw new Error(data.errors?.[0]?.message || 'CF Images API error');
+  }
+
+  return data.result;
+}
+
+async function listCFImages(env: Env, url: URL): Promise<Response> {
+  try {
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const perPage = parseInt(url.searchParams.get('per_page') || '100');
+
+    const result = await callCFImagesAPI(env, `?page=${page}&per_page=${perPage}`);
+
+    const images = result.images.map((img: CFImage) => ({
+      id: img.id,
+      source: 'cloudflare-images',
+      name: img.filename || img.id,
+      uploaded: img.uploaded,
+      url: img.variants?.[0] || `https://imagedelivery.net/${CF_ACCOUNT_ID}/${img.id}/public`,
+      thumbnail: img.variants?.find((v: string) => v.includes('thumbnail')) || img.variants?.[0],
+      variants: img.variants,
+      tags: img.meta?.tags ? img.meta.tags.split(',') : [],
+      title: img.meta?.title || ''
+    }));
+
+    return json({
+      photos: images,
+      total: result.images.length,
+      hasMore: result.images.length === perPage
+    });
+  } catch (error: any) {
+    if (error.message.includes('CF_IMAGES_TOKEN')) {
+      return json({ 
+        error: error.message,
+        setup: {
+          step1: 'Create API token at https://dash.cloudflare.com/profile/api-tokens',
+          step2: 'Permissions: Account > Cloudflare Images > Read',
+          step3: 'Run: cd apps/workers/meauxos-api && wrangler secret put CF_IMAGES_TOKEN'
+        }
+      }, 401);
+    }
+    return json({ error: error.message }, 500);
+  }
+}
+
+async function getCFImagesStats(env: Env): Promise<Response> {
+  try {
+    // Get usage stats
+    const statsUrl = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/images/v1/stats`;
+    
+    if (!env.CF_IMAGES_TOKEN) {
+      return json({ 
+        configured: false,
+        message: 'CF_IMAGES_TOKEN not set',
+        setup: {
+          step1: 'Create API token at https://dash.cloudflare.com/profile/api-tokens',
+          step2: 'Permissions: Account > Cloudflare Images > Read',
+          step3: 'Run: cd apps/workers/meauxos-api && wrangler secret put CF_IMAGES_TOKEN'
+        }
+      });
+    }
+
+    const res = await fetch(statsUrl, {
+      headers: {
+        'Authorization': `Bearer ${env.CF_IMAGES_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      return json({ error: data.errors?.[0]?.message }, 500);
+    }
+
+    return json({
+      configured: true,
+      count: data.result.count,
+      allowed: data.result.allowed
+    });
+  } catch (error: any) {
+    return json({ error: error.message }, 500);
+  }
+}
+
+async function deleteCFImage(env: Env, imageId: string): Promise<Response> {
+  try {
+    await callCFImagesAPI(env, `/${imageId}`, 'DELETE');
+    
+    // Also remove from D1 tracking
+    await env.DB.prepare('DELETE FROM images_metadata WHERE image_id = ?').bind(imageId).run();
+
+    return json({ success: true, deleted: imageId });
+  } catch (error: any) {
+    return json({ error: error.message }, 500);
+  }
+}
+
+async function updateCFImageMeta(env: Env, request: Request): Promise<Response> {
+  try {
+    const { imageId, title, tags, description } = await request.json() as {
+      imageId: string;
+      title?: string;
+      tags?: string[];
+      description?: string;
+    };
+
+    // Update in D1
+    await env.DB.prepare(`
+      INSERT OR REPLACE INTO images_metadata (image_id, filename, description, tags, category, updated_at)
+      VALUES (?, '', ?, ?, '', CURRENT_TIMESTAMP)
+    `).bind(imageId, description || '', JSON.stringify(tags || [])).run();
+
+    return json({ success: true, imageId });
+  } catch (error: any) {
+    return json({ error: error.message }, 500);
+  }
+}
+
+// Combined: List from both R2 and CF Images
+async function listAllPhotos(env: Env, url: URL): Promise<Response> {
+  try {
+    const limit = parseInt(url.searchParams.get('limit') || '50');
+    const filter = url.searchParams.get('filter') || '';
+    
+    const allPhotos: any[] = [];
+
+    // 1. Get R2 images
+    try {
+      const r2Listed = await env.R2_IMAGES.list({ limit });
+      
+      for (const obj of r2Listed.objects) {
+        const ext = obj.key.split('.').pop()?.toLowerCase() || '';
+        if (!IMAGE_EXTENSIONS.includes(ext)) continue;
+        
+        const meta = await env.DB.prepare(
+          'SELECT title, alt, tags FROM image_meta WHERE key = ?'
+        ).bind(obj.key).first();
+        
+        allPhotos.push({
+          id: obj.key,
+          source: 'r2',
+          name: obj.key.split('/').pop() || obj.key,
+          size: obj.size,
+          uploaded: obj.uploaded.toISOString(),
+          url: `/api/photos/image/${encodeURIComponent(obj.key)}`,
+          tags: meta?.tags ? JSON.parse(meta.tags as string) : [],
+          title: meta?.title as string || ''
+        });
+      }
+    } catch (e) {
+      console.error('R2 list error:', e);
+    }
+
+    // 2. Get CF Images (if configured)
+    if (env.CF_IMAGES_TOKEN) {
+      try {
+        const cfResult = await callCFImagesAPI(env, `?per_page=${limit}`);
+        
+        for (const img of cfResult.images) {
+          allPhotos.push({
+            id: img.id,
+            source: 'cloudflare-images',
+            name: img.filename || img.id,
+            uploaded: img.uploaded,
+            url: img.variants?.[0] || `https://imagedelivery.net/${CF_ACCOUNT_ID}/${img.id}/public`,
+            thumbnail: img.variants?.find((v: string) => v.includes('thumbnail')) || img.variants?.[0],
+            tags: img.meta?.tags ? img.meta.tags.split(',') : [],
+            title: img.meta?.title || ''
+          });
+        }
+      } catch (e) {
+        console.error('CF Images error:', e);
+      }
+    }
+
+    // Apply filter
+    let filtered = allPhotos;
+    if (filter === 'untagged') {
+      filtered = allPhotos.filter(p => !p.tags || p.tags.length === 0);
+    } else if (filter === 'tagged') {
+      filtered = allPhotos.filter(p => p.tags && p.tags.length > 0);
+    } else if (filter === 'r2') {
+      filtered = allPhotos.filter(p => p.source === 'r2');
+    } else if (filter === 'cf-images') {
+      filtered = allPhotos.filter(p => p.source === 'cloudflare-images');
+    }
+
+    // Sort by upload date
+    filtered.sort((a, b) => new Date(b.uploaded).getTime() - new Date(a.uploaded).getTime());
+
+    return json({
+      photos: filtered,
+      total: filtered.length,
+      sources: {
+        r2: allPhotos.filter(p => p.source === 'r2').length,
+        cfImages: allPhotos.filter(p => p.source === 'cloudflare-images').length
+      }
+    });
+  } catch (error: any) {
+    return json({ error: error.message }, 500);
+  }
+}
+
+async function getAllPhotosStats(env: Env): Promise<Response> {
+  try {
+    let r2Stats = { totalImages: 0, totalSize: 0, untaggedCount: 0 };
+    let cfStats = { configured: false, count: 0, allowed: 0 };
+
+    // R2 stats
+    try {
+      let cursor: string | undefined;
+      do {
+        const listed = await env.R2_IMAGES.list({ limit: 1000, cursor });
+        for (const obj of listed.objects) {
+          const ext = obj.key.split('.').pop()?.toLowerCase() || '';
+          if (IMAGE_EXTENSIONS.includes(ext)) {
+            r2Stats.totalImages++;
+            r2Stats.totalSize += obj.size;
+          }
+        }
+        cursor = listed.truncated ? listed.cursor : undefined;
+      } while (cursor);
+
+      const tagged = await env.DB.prepare(
+        'SELECT COUNT(*) as count FROM image_meta WHERE tags IS NOT NULL AND tags != "[]"'
+      ).first();
+      r2Stats.untaggedCount = r2Stats.totalImages - (tagged?.count as number || 0);
+    } catch (e) {
+      console.error('R2 stats error:', e);
+    }
+
+    // CF Images stats
+    if (env.CF_IMAGES_TOKEN) {
+      try {
+        const res = await fetch(
+          `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/images/v1/stats`,
+          {
+            headers: {
+              'Authorization': `Bearer ${env.CF_IMAGES_TOKEN}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        const data = await res.json();
+        if (data.success) {
+          cfStats = {
+            configured: true,
+            count: data.result.count?.current || 0,
+            allowed: data.result.count?.allowed || 0
+          };
+        }
+      } catch (e) {
+        console.error('CF Images stats error:', e);
+      }
+    }
+
+    return json({
+      r2: {
+        totalImages: r2Stats.totalImages,
+        totalSize: r2Stats.totalSize,
+        totalSizeFormatted: formatBytes(r2Stats.totalSize),
+        untaggedCount: r2Stats.untaggedCount
+      },
+      cfImages: cfStats,
+      combined: {
+        totalImages: r2Stats.totalImages + cfStats.count,
+        cfImagesConfigured: cfStats.configured
+      }
+    });
   } catch (error: any) {
     return json({ error: error.message }, 500);
   }

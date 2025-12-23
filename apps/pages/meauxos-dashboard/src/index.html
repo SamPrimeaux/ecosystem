@@ -1331,6 +1331,14 @@
                                     <span id="photo-size" class="text-meaux-cyan">--</span> • 
                                     <span id="photo-untagged" class="text-amber-400">--</span> untagged
                                 </p>
+                                <div id="photo-sources" class="flex gap-3 mt-2">
+                                    <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-xs font-medium">
+                                        <span id="r2-count">--</span> R2
+                                    </span>
+                                    <span id="cf-images-badge" class="px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 text-xs font-medium hidden">
+                                        <span id="cf-count">--</span> CF Images
+                                    </span>
+                                </div>
                             </div>
                             <div class="flex gap-3">
                                 <button onclick="showDuplicates()" class="px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-semibold hover:bg-amber-500/20 transition-all interactable flex items-center gap-2">
@@ -1351,6 +1359,9 @@
                                     <button onclick="filterPhotos('all')" id="photo-filter-all" class="px-3 py-1.5 rounded-lg bg-meaux-cyan/10 text-meaux-cyan text-sm font-medium transition-colors">All</button>
                                     <button onclick="filterPhotos('untagged')" id="photo-filter-untagged" class="px-3 py-1.5 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium transition-colors">Untagged</button>
                                     <button onclick="filterPhotos('tagged')" id="photo-filter-tagged" class="px-3 py-1.5 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium transition-colors">Tagged</button>
+                                    <span class="text-slate-600 mx-1">|</span>
+                                    <button onclick="filterPhotos('r2')" id="photo-filter-r2" class="px-3 py-1.5 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium transition-colors">R2 Only</button>
+                                    <button onclick="filterPhotos('cf-images')" id="photo-filter-cf-images" class="px-3 py-1.5 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium transition-colors">CF Images</button>
                                 </div>
                                 <div class="flex-1"></div>
                                 <div class="flex items-center gap-2">
@@ -2782,29 +2793,32 @@
             `;
             
             try {
-                // Load stats first
-                const statsRes = await fetch(`${API_BASE}/api/photos/stats`);
+                // Load combined stats first
+                const statsRes = await fetch(`${API_BASE}/api/all-photos/stats`);
                 const stats = await statsRes.json();
                 
-                document.getElementById('photo-count').textContent = stats.totalImages;
-                document.getElementById('photo-size').textContent = stats.totalSizeFormatted;
-                document.getElementById('photo-untagged').textContent = stats.untaggedCount;
+                document.getElementById('photo-count').textContent = stats.combined.totalImages;
+                document.getElementById('photo-size').textContent = stats.r2.totalSizeFormatted || '--';
+                document.getElementById('photo-untagged').textContent = stats.r2.untaggedCount;
+                document.getElementById('r2-count').textContent = stats.r2.totalImages;
                 
-                // Load photos
+                // Show CF Images badge if configured
+                if (stats.cfImages.configured) {
+                    document.getElementById('cf-images-badge').classList.remove('hidden');
+                    document.getElementById('cf-count').textContent = stats.cfImages.count;
+                }
+                
+                // Load combined photos
                 const filterParam = photoFilter !== 'all' ? `&filter=${photoFilter}` : '';
-                const res = await fetch(`${API_BASE}/api/photos/list?limit=100${filterParam}`);
+                const res = await fetch(`${API_BASE}/api/all-photos/list?limit=100${filterParam}`);
                 const data = await res.json();
                 
                 photoData = data.photos;
-                photoCursor = data.cursor;
+                photoCursor = null; // Combined API doesn't support cursor yet
                 
                 renderPhotoGrid();
                 
-                if (data.hasMore) {
-                    document.getElementById('photo-load-more').classList.remove('hidden');
-                } else {
-                    document.getElementById('photo-load-more').classList.add('hidden');
-                }
+                document.getElementById('photo-load-more').classList.add('hidden');
             } catch (err) {
                 console.error('Failed to load photos:', err);
                 grid.innerHTML = `
@@ -2848,11 +2862,14 @@
         function renderPhotoCard(photo, isLarge) {
             const hasNoTags = !photo.tags || photo.tags.length === 0;
             const ext = photo.name.split('.').pop()?.toUpperCase();
+            const isCFImage = photo.source === 'cloudflare-images';
+            const photoId = photo.id || photo.key;
+            const imgUrl = isCFImage ? photo.url : `${API_BASE}${photo.url}`;
             
             return `
-                <div class="group relative rounded-xl overflow-hidden bg-slate-800/50 border border-white/5 hover:border-meaux-cyan/30 transition-all cursor-pointer ${isLarge ? 'aspect-video' : 'aspect-square'}" onclick="openPhotoModal('${photo.key}')">
+                <div class="group relative rounded-xl overflow-hidden bg-slate-800/50 border border-white/5 hover:border-meaux-cyan/30 transition-all cursor-pointer ${isLarge ? 'aspect-video' : 'aspect-square'}" onclick="openPhotoModal('${photoId}')">
                     <img 
-                        src="${API_BASE}${photo.url}" 
+                        src="${imgUrl}" 
                         alt="${photo.title || photo.name}"
                         loading="lazy"
                         class="w-full h-full object-cover transition-transform group-hover:scale-105"
@@ -2861,10 +2878,13 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div class="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
                         <p class="text-white text-sm font-medium truncate">${photo.title || photo.name}</p>
-                        <p class="text-slate-400 text-xs">${formatPhotoSize(photo.size)}</p>
+                        <p class="text-slate-400 text-xs">${photo.size ? formatPhotoSize(photo.size) : 'CF Image'}</p>
                     </div>
                     ${hasNoTags ? `<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-400 animate-pulse" title="Untagged"></div>` : ''}
-                    <div class="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold bg-black/50 text-white">${ext}</div>
+                    <div class="absolute top-2 left-2 flex gap-1">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-black/50 text-white">${ext}</span>
+                        ${isCFImage ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-500/80 text-white">CF</span>` : ''}
+                    </div>
                 </div>
             `;
         }
@@ -2879,7 +2899,7 @@
         
         function filterPhotos(filter) {
             photoFilter = filter;
-            ['all', 'untagged', 'tagged'].forEach(f => {
+            ['all', 'untagged', 'tagged', 'r2', 'cf-images'].forEach(f => {
                 const btn = document.getElementById(`photo-filter-${f}`);
                 if (btn) {
                     if (f === filter) {
@@ -2942,14 +2962,17 @@
             }
         }
         
-        function openPhotoModal(key) {
-            currentPhotoKey = key;
-            const photo = photoData.find(p => p.key === key);
+        function openPhotoModal(id) {
+            currentPhotoKey = id;
+            const photo = photoData.find(p => (p.id || p.key) === id);
             if (!photo) return;
             
-            document.getElementById('photo-modal-img').src = `${API_BASE}${photo.url}`;
+            const isCFImage = photo.source === 'cloudflare-images';
+            const imgUrl = isCFImage ? photo.url : `${API_BASE}${photo.url}`;
+            
+            document.getElementById('photo-modal-img').src = imgUrl;
             document.getElementById('photo-modal-name').textContent = photo.name;
-            document.getElementById('photo-modal-size').textContent = formatPhotoSize(photo.size);
+            document.getElementById('photo-modal-size').textContent = photo.size ? formatPhotoSize(photo.size) : 'CF Image';
             document.getElementById('photo-modal-date').textContent = new Date(photo.uploaded).toLocaleDateString();
             document.getElementById('photo-modal-title').value = photo.title || '';
             document.getElementById('photo-modal-tags').value = (photo.tags || []).join(', ');
@@ -2965,19 +2988,28 @@
         async function savePhotoMeta() {
             if (!currentPhotoKey) return;
             
+            const photo = photoData.find(p => (p.id || p.key) === currentPhotoKey);
+            if (!photo) return;
+            
             const title = document.getElementById('photo-modal-title').value;
             const tagsStr = document.getElementById('photo-modal-tags').value;
             const tags = tagsStr.split(',').map(t => t.trim()).filter(t => t);
             
             try {
-                await fetch(`${API_BASE}/api/photos/meta`, {
+                const isCFImage = photo.source === 'cloudflare-images';
+                const endpoint = isCFImage ? '/api/cf-images/meta' : '/api/photos/meta';
+                const payload = isCFImage 
+                    ? { imageId: currentPhotoKey, title, tags }
+                    : { key: currentPhotoKey, title, tags };
+                
+                await fetch(`${API_BASE}${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ key: currentPhotoKey, title, tags })
+                    body: JSON.stringify(payload)
                 });
                 
                 // Update local data
-                const idx = photoData.findIndex(p => p.key === currentPhotoKey);
+                const idx = photoData.findIndex(p => (p.id || p.key) === currentPhotoKey);
                 if (idx !== -1) {
                     photoData[idx].title = title;
                     photoData[idx].tags = tags;
@@ -2987,9 +3019,9 @@
                 renderPhotoGrid();
                 
                 // Refresh stats
-                const statsRes = await fetch(`${API_BASE}/api/photos/stats`);
+                const statsRes = await fetch(`${API_BASE}/api/all-photos/stats`);
                 const stats = await statsRes.json();
-                document.getElementById('photo-untagged').textContent = stats.untaggedCount;
+                document.getElementById('photo-untagged').textContent = stats.r2.untaggedCount;
             } catch (err) {
                 console.error('Failed to save meta:', err);
                 alert('Failed to save. Please try again.');
@@ -2998,11 +3030,14 @@
         
         function downloadCurrentPhoto() {
             if (!currentPhotoKey) return;
-            const photo = photoData.find(p => p.key === currentPhotoKey);
+            const photo = photoData.find(p => (p.id || p.key) === currentPhotoKey);
             if (!photo) return;
             
+            const isCFImage = photo.source === 'cloudflare-images';
+            const downloadUrl = isCFImage ? photo.url : `${API_BASE}${photo.url}`;
+            
             const a = document.createElement('a');
-            a.href = `${API_BASE}${photo.url}`;
+            a.href = downloadUrl;
             a.download = photo.name;
             a.target = '_blank';
             document.body.appendChild(a);
@@ -3014,12 +3049,18 @@
             if (!currentPhotoKey) return;
             if (!confirm('Are you sure you want to delete this photo?')) return;
             
+            const photo = photoData.find(p => (p.id || p.key) === currentPhotoKey);
+            if (!photo) return;
+            
             try {
-                await fetch(`${API_BASE}/api/photos/delete/${encodeURIComponent(currentPhotoKey)}`, {
-                    method: 'DELETE'
-                });
+                const isCFImage = photo.source === 'cloudflare-images';
+                const endpoint = isCFImage 
+                    ? `/api/cf-images/delete/${encodeURIComponent(currentPhotoKey)}`
+                    : `/api/photos/delete/${encodeURIComponent(currentPhotoKey)}`;
                 
-                photoData = photoData.filter(p => p.key !== currentPhotoKey);
+                await fetch(`${API_BASE}${endpoint}`, { method: 'DELETE' });
+                
+                photoData = photoData.filter(p => (p.id || p.key) !== currentPhotoKey);
                 closePhotoModal();
                 renderPhotoGrid();
                 loadPhotos(); // Refresh stats

@@ -21,6 +21,12 @@ bucket_name = "meauxos-documents"
 binding = "R2_IMAGES"
 bucket_name = "entireorganizationimagesandcontentbucket"
 
+# Cloudflare Images API (requires CF_IMAGES_TOKEN secret)
+# Run: wrangler secret put CF_IMAGES_TOKEN
+# Create token at: https://dash.cloudflare.com/profile/api-tokens
+# Permissions needed: Account > Cloudflare Images > Read
+
 # CORS headers for dashboard access
 [vars]
 CORS_ORIGIN = "*"
+CF_ACCOUNT_ID = "ede6590ac0d2fb7daf155b35653457b2"
