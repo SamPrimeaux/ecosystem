@@ -121,6 +121,22 @@
     </script>
 
     <style>
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
         /* --- MeauxOS Branded Icon System --- */
         .meaux-icon {
             width: 1em;
@@ -861,6 +877,307 @@
                                     <div class="flex-1">
                                         <div class="h-4 bg-slate-700 rounded w-1/3 mb-2"></div>
                                         <div class="h-3 bg-slate-700 rounded w-1/2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- MeauxTeam Section - Team Collaboration Hub -->
+                    <section id="meauxteam-section" class="page-section hidden">
+                        <!-- Header -->
+                        <div class="flex items-end justify-between mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-white mb-2">MeauxTeam</h2>
+                                <p class="text-slate-400">Team collaboration • Chat • Tasks • Video</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <button onclick="startVideoCall()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all interactable flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    Start Call
+                                </button>
+                                <button onclick="openNewChannel()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white text-sm font-semibold shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all interactable">
+                                    + New Channel
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Main Grid Layout -->
+                        <div class="grid grid-cols-12 gap-6" style="height: calc(100vh - 200px);">
+                            
+                            <!-- Left Sidebar - Channels & DMs -->
+                            <div class="col-span-3 hero-glass rounded-2xl border border-white/5 flex flex-col overflow-hidden">
+                                <!-- Online Team Members -->
+                                <div class="p-4 border-b border-white/5">
+                                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Online Now</h3>
+                                    <div class="flex flex-wrap gap-2" id="online-members">
+                                        <div class="relative group cursor-pointer" title="Sam Primeaux">
+                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-meaux-cyan to-meaux-blue flex items-center justify-center text-white text-sm font-bold">SP</div>
+                                            <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-slate-900"></div>
+                                        </div>
+                                        <div class="relative group cursor-pointer" title="Claude AI">
+                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">AI</div>
+                                            <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-slate-900 animate-pulse"></div>
+                                        </div>
+                                        <div class="relative group cursor-pointer" title="Agent Sam">
+                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-sm font-bold">AS</div>
+                                            <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-slate-900"></div>
+                                        </div>
+                                        <button class="w-10 h-10 rounded-full bg-slate-800/50 border border-dashed border-slate-600 flex items-center justify-center text-slate-500 hover:text-meaux-cyan hover:border-meaux-cyan transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Channels List -->
+                                <div class="flex-1 overflow-y-auto p-4">
+                                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Channels</h3>
+                                    <div class="space-y-1" id="channels-list">
+                                        <button onclick="selectChannel('general')" class="channel-btn active w-full text-left px-3 py-2 rounded-lg bg-meaux-cyan/10 text-meaux-cyan text-sm font-medium flex items-center gap-2 transition-colors">
+                                            <span class="text-lg">#</span> general
+                                            <span class="ml-auto bg-meaux-cyan text-slate-900 text-xs px-1.5 py-0.5 rounded-full font-bold">3</span>
+                                        </button>
+                                        <button onclick="selectChannel('dev')" class="channel-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium flex items-center gap-2 transition-colors">
+                                            <span class="text-lg">#</span> dev-team
+                                        </button>
+                                        <button onclick="selectChannel('design')" class="channel-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium flex items-center gap-2 transition-colors">
+                                            <span class="text-lg">#</span> design
+                                        </button>
+                                        <button onclick="selectChannel('announcements')" class="channel-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium flex items-center gap-2 transition-colors">
+                                            <span class="text-lg">📢</span> announcements
+                                        </button>
+                                        <button onclick="selectChannel('random')" class="channel-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium flex items-center gap-2 transition-colors">
+                                            <span class="text-lg">#</span> random
+                                        </button>
+                                    </div>
+
+                                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 mt-6">Direct Messages</h3>
+                                    <div class="space-y-1">
+                                        <button onclick="selectDM('claude')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium flex items-center gap-2 transition-colors">
+                                            <div class="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold">AI</div>
+                                            Claude Assistant
+                                            <div class="ml-auto w-2 h-2 rounded-full bg-emerald-500"></div>
+                                        </button>
+                                        <button onclick="selectDM('agent-sam')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium flex items-center gap-2 transition-colors">
+                                            <div class="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-[10px] font-bold">AS</div>
+                                            Agent Sam
+                                            <div class="ml-auto w-2 h-2 rounded-full bg-emerald-500"></div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Center - Chat / Message Board -->
+                            <div class="col-span-6 hero-glass rounded-2xl border border-white/5 flex flex-col overflow-hidden">
+                                <!-- Chat Header -->
+                                <div class="p-4 border-b border-white/5 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xl text-meaux-cyan">#</span>
+                                        <div>
+                                            <h3 class="text-white font-semibold" id="current-channel-name">general</h3>
+                                            <p class="text-xs text-slate-500">Team-wide discussions and updates</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button class="p-2 rounded-lg hover:bg-slate-800/50 text-slate-400 hover:text-white transition-colors" title="Search">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                        </button>
+                                        <button class="p-2 rounded-lg hover:bg-slate-800/50 text-slate-400 hover:text-white transition-colors" title="Pin messages">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                                        </button>
+                                        <button class="p-2 rounded-lg hover:bg-slate-800/50 text-slate-400 hover:text-white transition-colors" title="Members">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Messages Area -->
+                                <div class="flex-1 overflow-y-auto p-4 space-y-4" id="team-chat-messages">
+                                    <!-- System Message -->
+                                    <div class="flex justify-center">
+                                        <span class="text-xs text-slate-500 bg-slate-800/50 px-3 py-1 rounded-full">Today</span>
+                                    </div>
+                                    
+                                    <!-- Message 1 -->
+                                    <div class="flex items-start gap-3 group">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-meaux-cyan to-meaux-blue flex items-center justify-center text-white text-sm font-bold flex-shrink-0">SP</div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-baseline gap-2">
+                                                <span class="text-white font-semibold text-sm">Sam Primeaux</span>
+                                                <span class="text-xs text-slate-500">10:42 AM</span>
+                                            </div>
+                                            <p class="text-slate-300 text-sm mt-1">Just deployed the new MeauxStats with real D1 analytics! 🚀 Check it out at #meauxstats</p>
+                                            <div class="flex items-center gap-2 mt-2">
+                                                <button class="text-xs text-slate-500 hover:text-meaux-cyan flex items-center gap-1 transition-colors">
+                                                    <span>🎉</span> 2
+                                                </button>
+                                                <button class="text-xs text-slate-500 hover:text-meaux-cyan flex items-center gap-1 transition-colors">
+                                                    <span>🚀</span> 1
+                                                </button>
+                                                <button class="opacity-0 group-hover:opacity-100 text-xs text-slate-500 hover:text-white px-2 py-1 rounded hover:bg-slate-800/50 transition-all">Reply</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Message 2 - AI Response -->
+                                    <div class="flex items-start gap-3 group">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">AI</div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-baseline gap-2">
+                                                <span class="text-white font-semibold text-sm">Claude Assistant</span>
+                                                <span class="text-xs px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-400">AI</span>
+                                                <span class="text-xs text-slate-500">10:43 AM</span>
+                                            </div>
+                                            <p class="text-slate-300 text-sm mt-1">Excellent work! The analytics API is now serving real data from the meauxos D1 database. I can see 129 projects, 77 R2 buckets, and 6 brands tracked.</p>
+                                            <div class="mt-2 p-3 rounded-lg bg-slate-800/50 border border-white/5">
+                                                <div class="text-xs text-slate-400 mb-2">📊 Quick Stats</div>
+                                                <div class="grid grid-cols-3 gap-2 text-center">
+                                                    <div><div class="text-lg font-bold text-meaux-cyan">129</div><div class="text-[10px] text-slate-500">Projects</div></div>
+                                                    <div><div class="text-lg font-bold text-violet-400">77</div><div class="text-[10px] text-slate-500">R2 Buckets</div></div>
+                                                    <div><div class="text-lg font-bold text-emerald-400">$0.38</div><div class="text-[10px] text-slate-500">Cost</div></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Message 3 -->
+                                    <div class="flex items-start gap-3 group">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">AS</div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-baseline gap-2">
+                                                <span class="text-white font-semibold text-sm">Agent Sam</span>
+                                                <span class="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">Bot</span>
+                                                <span class="text-xs text-slate-500">10:45 AM</span>
+                                            </div>
+                                            <p class="text-slate-300 text-sm mt-1">I'll monitor the deployments and alert the team if anything needs attention. Currently tracking 2 active deployments.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Message Input -->
+                                <div class="p-4 border-t border-white/5">
+                                    <div class="flex items-end gap-3">
+                                        <button class="p-2 rounded-lg hover:bg-slate-800/50 text-slate-400 hover:text-white transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        </button>
+                                        <div class="flex-1 relative">
+                                            <input type="text" id="team-chat-input" 
+                                                class="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-white/5 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-meaux-cyan/50 transition-colors"
+                                                placeholder="Message #general"
+                                                onkeypress="if(event.key==='Enter') sendTeamMessage()">
+                                            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                                                <button class="p-1.5 rounded hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                </button>
+                                                <button class="p-1.5 rounded hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button onclick="sendTeamMessage()" class="p-3 rounded-xl bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white shadow-lg shadow-meaux-cyan/25 hover:shadow-meaux-cyan/40 transition-all">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Sidebar - Tasks & Activity -->
+                            <div class="col-span-3 flex flex-col gap-4 overflow-hidden">
+                                <!-- Quick Actions -->
+                                <div class="hero-glass rounded-2xl border border-white/5 p-4">
+                                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Quick Actions</h3>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button onclick="startVideoCall()" class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors text-center">
+                                            <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                            <span class="text-xs">Video Call</span>
+                                        </button>
+                                        <button onclick="startScreenShare()" class="p-3 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 transition-colors text-center">
+                                            <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                            <span class="text-xs">Share Screen</span>
+                                        </button>
+                                        <button onclick="createPoll()" class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 transition-colors text-center">
+                                            <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                            <span class="text-xs">Create Poll</span>
+                                        </button>
+                                        <button onclick="scheduleEvent()" class="p-3 rounded-xl bg-meaux-cyan/10 border border-meaux-cyan/20 text-meaux-cyan hover:bg-meaux-cyan/20 transition-colors text-center">
+                                            <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            <span class="text-xs">Schedule</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Team Tasks Mini Kanban -->
+                                <div class="hero-glass rounded-2xl border border-white/5 p-4 flex-1 overflow-hidden flex flex-col">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Team Tasks</h3>
+                                        <button onclick="openFullKanban()" class="text-xs text-meaux-cyan hover:underline">View All</button>
+                                    </div>
+                                    <div class="flex-1 overflow-y-auto space-y-2" id="team-tasks">
+                                        <div class="p-3 rounded-lg bg-slate-800/30 border-l-2 border-meaux-cyan">
+                                            <div class="text-sm text-white font-medium mb-1">Deploy MeauxTeam update</div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-meaux-cyan/20 text-meaux-cyan">In Progress</span>
+                                                <span class="text-[10px] text-slate-500">SP</span>
+                                            </div>
+                                        </div>
+                                        <div class="p-3 rounded-lg bg-slate-800/30 border-l-2 border-amber-500">
+                                            <div class="text-sm text-white font-medium mb-1">Review PR #42</div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">Review</span>
+                                                <span class="text-[10px] text-slate-500">AI</span>
+                                            </div>
+                                        </div>
+                                        <div class="p-3 rounded-lg bg-slate-800/30 border-l-2 border-slate-500">
+                                            <div class="text-sm text-white font-medium mb-1">Update documentation</div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-500/20 text-slate-400">Backlog</span>
+                                                <span class="text-[10px] text-slate-500">AS</span>
+                                            </div>
+                                        </div>
+                                        <div class="p-3 rounded-lg bg-slate-800/30 border-l-2 border-emerald-500">
+                                            <div class="text-sm text-white font-medium mb-1">API endpoint tests</div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Done</span>
+                                                <span class="text-[10px] text-slate-500">SP</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onclick="addTeamTask()" class="mt-3 w-full py-2 rounded-lg border border-dashed border-slate-600 text-slate-500 text-sm hover:border-meaux-cyan hover:text-meaux-cyan transition-colors">
+                                        + Add Task
+                                    </button>
+                                </div>
+
+                                <!-- Activity Feed -->
+                                <div class="hero-glass rounded-2xl border border-white/5 p-4">
+                                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Activity</h3>
+                                    <div class="space-y-3 text-xs" id="activity-feed">
+                                        <div class="flex items-start gap-2">
+                                            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5"></div>
+                                            <div>
+                                                <span class="text-white">Sam</span>
+                                                <span class="text-slate-500">deployed</span>
+                                                <span class="text-meaux-cyan">meauxos-dashboard</span>
+                                                <div class="text-slate-600">2 min ago</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <div class="w-1.5 h-1.5 rounded-full bg-violet-500 mt-1.5"></div>
+                                            <div>
+                                                <span class="text-white">Claude</span>
+                                                <span class="text-slate-500">updated</span>
+                                                <span class="text-violet-400">analytics API</span>
+                                                <div class="text-slate-600">15 min ago</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5"></div>
+                                            <div>
+                                                <span class="text-white">Agent Sam</span>
+                                                <span class="text-slate-500">completed</span>
+                                                <span class="text-amber-400">backup task</span>
+                                                <div class="text-slate-600">1 hour ago</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1661,6 +1978,206 @@
 
         function openCloudConvert() {
             alert('Opening CloudConvert...');
+        }
+
+        // --- MeauxTeam Functions ---
+        let currentChannel = 'general';
+
+        function selectChannel(channel) {
+            currentChannel = channel;
+            document.querySelectorAll('.channel-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-meaux-cyan/10', 'text-meaux-cyan');
+                btn.classList.add('hover:bg-slate-800/50', 'text-slate-400');
+            });
+            event.target.closest('.channel-btn').classList.add('active', 'bg-meaux-cyan/10', 'text-meaux-cyan');
+            event.target.closest('.channel-btn').classList.remove('hover:bg-slate-800/50', 'text-slate-400');
+            
+            const nameEl = document.getElementById('current-channel-name');
+            if (nameEl) nameEl.textContent = channel;
+            
+            const inputEl = document.getElementById('team-chat-input');
+            if (inputEl) inputEl.placeholder = `Message #${channel}`;
+        }
+
+        function selectDM(user) {
+            const nameEl = document.getElementById('current-channel-name');
+            if (nameEl) nameEl.textContent = user;
+            
+            const inputEl = document.getElementById('team-chat-input');
+            if (inputEl) inputEl.placeholder = `Message ${user}`;
+        }
+
+        function sendTeamMessage() {
+            const input = document.getElementById('team-chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesDiv = document.getElementById('team-chat-messages');
+            const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const msgHtml = `
+                <div class="flex items-start gap-3 group animate-fade-in">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-meaux-cyan to-meaux-blue flex items-center justify-center text-white text-sm font-bold flex-shrink-0">SP</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-white font-semibold text-sm">Sam Primeaux</span>
+                            <span class="text-xs text-slate-500">${now}</span>
+                        </div>
+                        <p class="text-slate-300 text-sm mt-1">${message}</p>
+                    </div>
+                </div>
+            `;
+            messagesDiv.insertAdjacentHTML('beforeend', msgHtml);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            input.value = '';
+
+            // Simulate AI response
+            setTimeout(() => {
+                const aiHtml = `
+                    <div class="flex items-start gap-3 group animate-fade-in">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">AI</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-white font-semibold text-sm">Claude Assistant</span>
+                                <span class="text-xs px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-400">AI</span>
+                                <span class="text-xs text-slate-500">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            <p class="text-slate-300 text-sm mt-1">Got it! I'll help with that. Is there anything specific you'd like me to focus on?</p>
+                        </div>
+                    </div>
+                `;
+                messagesDiv.insertAdjacentHTML('beforeend', aiHtml);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }, 1000);
+        }
+
+        function startVideoCall() {
+            const modal = `
+                <div id="video-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center animate-fade-in">
+                    <div class="bg-slate-900 rounded-2xl border border-white/10 p-6 max-w-lg w-full mx-4">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-white">Start Video Call</h3>
+                            <button onclick="document.getElementById('video-modal').remove()" class="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                        <div class="aspect-video bg-slate-800 rounded-xl mb-4 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-meaux-cyan to-meaux-blue flex items-center justify-center text-white text-2xl font-bold mx-auto mb-3">SP</div>
+                                <p class="text-slate-400">Camera preview</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-center gap-4 mb-6">
+                            <button class="p-4 rounded-full bg-slate-800 hover:bg-slate-700 text-white transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                            </button>
+                            <button class="p-4 rounded-full bg-slate-800 hover:bg-slate-700 text-white transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            </button>
+                        </div>
+                        <button onclick="document.getElementById('video-modal').remove(); alert('Connecting to call...')" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all">
+                            Join Call
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modal);
+        }
+
+        function startScreenShare() {
+            alert('Screen sharing initiated. Select a window to share.');
+        }
+
+        function createPoll() {
+            const poll = `
+                <div class="flex items-start gap-3 group animate-fade-in">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-meaux-cyan to-meaux-blue flex items-center justify-center text-white text-sm font-bold flex-shrink-0">SP</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-white font-semibold text-sm">Sam Primeaux</span>
+                            <span class="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">Poll</span>
+                            <span class="text-xs text-slate-500">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                        <p class="text-white text-sm mt-2 font-medium">Which feature should we prioritize next?</p>
+                        <div class="mt-3 space-y-2">
+                            <button onclick="votePoll(this, 45)" class="w-full text-left p-2 rounded-lg bg-slate-800/50 border border-white/5 hover:border-meaux-cyan/30 transition-colors group">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm text-slate-300">More analytics</span>
+                                    <span class="text-xs text-slate-500">45%</span>
+                                </div>
+                                <div class="h-1 bg-slate-700 rounded-full overflow-hidden">
+                                    <div class="h-full bg-meaux-cyan rounded-full" style="width: 45%"></div>
+                                </div>
+                            </button>
+                            <button onclick="votePoll(this, 30)" class="w-full text-left p-2 rounded-lg bg-slate-800/50 border border-white/5 hover:border-meaux-cyan/30 transition-colors">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm text-slate-300">Team chat features</span>
+                                    <span class="text-xs text-slate-500">30%</span>
+                                </div>
+                                <div class="h-1 bg-slate-700 rounded-full overflow-hidden">
+                                    <div class="h-full bg-violet-500 rounded-full" style="width: 30%"></div>
+                                </div>
+                            </button>
+                            <button onclick="votePoll(this, 25)" class="w-full text-left p-2 rounded-lg bg-slate-800/50 border border-white/5 hover:border-meaux-cyan/30 transition-colors">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm text-slate-300">File sharing</span>
+                                    <span class="text-xs text-slate-500">25%</span>
+                                </div>
+                                <div class="h-1 bg-slate-700 rounded-full overflow-hidden">
+                                    <div class="h-full bg-amber-500 rounded-full" style="width: 25%"></div>
+                                </div>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">12 votes • Ends in 24h</p>
+                    </div>
+                </div>
+            `;
+            const messagesDiv = document.getElementById('team-chat-messages');
+            messagesDiv.insertAdjacentHTML('beforeend', poll);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function votePoll(btn, pct) {
+            btn.classList.add('border-meaux-cyan/50');
+            btn.querySelector('.text-xs').textContent = (pct + 5) + '%';
+        }
+
+        function scheduleEvent() {
+            alert('Opening calendar to schedule event...');
+        }
+
+        function openNewChannel() {
+            const name = prompt('Enter new channel name:');
+            if (name) {
+                const channelsList = document.getElementById('channels-list');
+                const newChannel = `
+                    <button onclick="selectChannel('${name}')" class="channel-btn w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium flex items-center gap-2 transition-colors">
+                        <span class="text-lg">#</span> ${name}
+                    </button>
+                `;
+                channelsList.insertAdjacentHTML('beforeend', newChannel);
+            }
+        }
+
+        function openFullKanban() {
+            window.location.hash = 'meauxwork';
+        }
+
+        function addTeamTask() {
+            const task = prompt('Enter task description:');
+            if (task) {
+                const tasksList = document.getElementById('team-tasks');
+                const newTask = `
+                    <div class="p-3 rounded-lg bg-slate-800/30 border-l-2 border-meaux-cyan animate-fade-in">
+                        <div class="text-sm text-white font-medium mb-1">${task}</div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-meaux-cyan/20 text-meaux-cyan">New</span>
+                            <span class="text-[10px] text-slate-500">SP</span>
+                        </div>
+                    </div>
+                `;
+                tasksList.insertAdjacentHTML('afterbegin', newTask);
+            }
         }
 
         function renderHTML() {
