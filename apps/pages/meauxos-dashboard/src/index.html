@@ -1320,6 +1320,143 @@
                         </div>
                     </section>
 
+                    <!-- MeauxPhoto Section - Photo Library & Organization -->
+                    <section id="meauxphoto-section" class="page-section hidden">
+                        <!-- Header with Stats -->
+                        <div class="flex items-end justify-between mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-white mb-2">MeauxPhoto</h2>
+                                <p class="text-slate-400">
+                                    <span id="photo-count" class="text-meaux-cyan font-bold">--</span> images • 
+                                    <span id="photo-size" class="text-meaux-cyan">--</span> • 
+                                    <span id="photo-untagged" class="text-amber-400">--</span> untagged
+                                </p>
+                            </div>
+                            <div class="flex gap-3">
+                                <button onclick="showDuplicates()" class="px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-semibold hover:bg-amber-500/20 transition-all interactable flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    Find Duplicates
+                                </button>
+                                <button onclick="scanAllPhotos()" class="px-4 py-2 rounded-xl bg-slate-800/50 border border-white/10 text-slate-300 text-sm font-semibold hover:bg-slate-700/50 transition-all interactable flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    Scan Library
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filter Bar -->
+                        <div class="hero-glass rounded-xl p-4 border border-white/5 mb-6">
+                            <div class="flex flex-wrap items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <button onclick="filterPhotos('all')" id="photo-filter-all" class="px-3 py-1.5 rounded-lg bg-meaux-cyan/10 text-meaux-cyan text-sm font-medium transition-colors">All</button>
+                                    <button onclick="filterPhotos('untagged')" id="photo-filter-untagged" class="px-3 py-1.5 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium transition-colors">Untagged</button>
+                                    <button onclick="filterPhotos('tagged')" id="photo-filter-tagged" class="px-3 py-1.5 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium transition-colors">Tagged</button>
+                                </div>
+                                <div class="flex-1"></div>
+                                <div class="flex items-center gap-2">
+                                    <select id="photo-sort" onchange="sortPhotos()" class="px-3 py-1.5 rounded-lg bg-slate-800/50 border border-white/10 text-white text-sm focus:outline-none focus:border-meaux-cyan/50">
+                                        <option value="newest">Newest First</option>
+                                        <option value="oldest">Oldest First</option>
+                                        <option value="largest">Largest First</option>
+                                        <option value="name">Name A-Z</option>
+                                    </select>
+                                    <div class="flex border border-white/10 rounded-lg overflow-hidden">
+                                        <button onclick="setPhotoView('grid')" id="photo-view-grid" class="p-2 bg-meaux-cyan/10 text-meaux-cyan">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                                        </button>
+                                        <button onclick="setPhotoView('large')" id="photo-view-large" class="p-2 hover:bg-slate-800/50 text-slate-400">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Photo Grid -->
+                        <div id="photo-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4" style="min-height: 400px;">
+                            <!-- Loading state -->
+                            <div class="col-span-full flex flex-col items-center justify-center py-20">
+                                <div class="w-12 h-12 border-4 border-meaux-cyan/20 border-t-meaux-cyan rounded-full animate-spin mb-4"></div>
+                                <p class="text-slate-400">Loading photos...</p>
+                            </div>
+                        </div>
+
+                        <!-- Load More -->
+                        <div id="photo-load-more" class="hidden text-center mt-8">
+                            <button onclick="loadMorePhotos()" class="px-6 py-3 rounded-xl bg-slate-800/50 border border-white/10 text-white text-sm font-semibold hover:bg-slate-700/50 transition-all">
+                                Load More Photos
+                            </button>
+                        </div>
+
+                        <!-- Duplicates Modal -->
+                        <div id="duplicates-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+                            <div class="bg-slate-900 rounded-2xl border border-white/10 max-w-4xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+                                <div class="p-6 border-b border-white/5 flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-white">Duplicate Finder</h3>
+                                        <p class="text-sm text-slate-400">Found <span id="dup-count" class="text-amber-400">--</span> groups • <span id="dup-savings" class="text-emerald-400">--</span> potential savings</p>
+                                    </div>
+                                    <button onclick="closeDuplicatesModal()" class="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </div>
+                                <div id="duplicates-list" class="flex-1 overflow-y-auto p-6 space-y-6">
+                                    <!-- Duplicate groups will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Photo Detail Modal -->
+                        <div id="photo-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+                            <div class="max-w-5xl w-full max-h-[90vh] flex flex-col md:flex-row gap-6">
+                                <!-- Image Preview -->
+                                <div class="flex-1 flex items-center justify-center">
+                                    <img id="photo-modal-img" src="" alt="" class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl">
+                                </div>
+                                <!-- Metadata Panel -->
+                                <div class="w-full md:w-80 bg-slate-900 rounded-2xl border border-white/10 p-6 flex flex-col">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="text-lg font-bold text-white">Details</h3>
+                                        <button onclick="closePhotoModal()" class="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
+                                    </div>
+                                    <div class="space-y-4 flex-1 overflow-y-auto">
+                                        <div>
+                                            <label class="text-xs text-slate-500 uppercase tracking-wide">Filename</label>
+                                            <p id="photo-modal-name" class="text-sm text-white truncate">--</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-xs text-slate-500 uppercase tracking-wide">Size</label>
+                                            <p id="photo-modal-size" class="text-sm text-white">--</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-xs text-slate-500 uppercase tracking-wide">Uploaded</label>
+                                            <p id="photo-modal-date" class="text-sm text-white">--</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-xs text-slate-500 uppercase tracking-wide mb-2 block">Title</label>
+                                            <input type="text" id="photo-modal-title" class="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-white text-sm focus:outline-none focus:border-meaux-cyan/50" placeholder="Add title...">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs text-slate-500 uppercase tracking-wide mb-2 block">Tags</label>
+                                            <input type="text" id="photo-modal-tags" class="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-white/10 text-white text-sm focus:outline-none focus:border-meaux-cyan/50" placeholder="tag1, tag2, tag3...">
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2 mt-4 pt-4 border-t border-white/5">
+                                        <button onclick="savePhotoMeta()" class="flex-1 py-2 rounded-lg bg-gradient-to-r from-meaux-cyan to-meaux-blue text-white text-sm font-semibold">Save</button>
+                                        <button onclick="downloadCurrentPhoto()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                        </button>
+                                        <button onclick="deleteCurrentPhoto()" class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- DevOps Studio Section -->
                     <section id="devops-section" class="page-section hidden"
                         style="height: 100vh; width: 100%; position: fixed; top: 0; left: 0; z-index: 1000; background: #020617;">
@@ -1938,6 +2075,9 @@
             }
             if (window.location.hash === '#meauxdoc') {
                 loadDocuments();
+            }
+            if (window.location.hash === '#meauxphoto') {
+                loadPhotos();
             }
         }
 
@@ -2617,6 +2757,392 @@
                 docUploadController.abort();
             }
             document.getElementById('doc-upload-progress').classList.add('hidden');
+        }
+
+        // ============================================
+        // MeauxPhoto - Photo Library & Organization
+        // ============================================
+        
+        const API_BASE = 'https://meauxos-api.meauxbility.workers.dev';
+        let photoData = [];
+        let photoCursor = null;
+        let photoFilter = 'all';
+        let photoView = 'grid';
+        let currentPhotoKey = null;
+        
+        async function loadPhotos() {
+            const grid = document.getElementById('photo-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = `
+                <div class="col-span-full flex flex-col items-center justify-center py-20">
+                    <div class="w-12 h-12 border-4 border-meaux-cyan/20 border-t-meaux-cyan rounded-full animate-spin mb-4"></div>
+                    <p class="text-slate-400">Loading photos...</p>
+                </div>
+            `;
+            
+            try {
+                // Load stats first
+                const statsRes = await fetch(`${API_BASE}/api/photos/stats`);
+                const stats = await statsRes.json();
+                
+                document.getElementById('photo-count').textContent = stats.totalImages;
+                document.getElementById('photo-size').textContent = stats.totalSizeFormatted;
+                document.getElementById('photo-untagged').textContent = stats.untaggedCount;
+                
+                // Load photos
+                const filterParam = photoFilter !== 'all' ? `&filter=${photoFilter}` : '';
+                const res = await fetch(`${API_BASE}/api/photos/list?limit=100${filterParam}`);
+                const data = await res.json();
+                
+                photoData = data.photos;
+                photoCursor = data.cursor;
+                
+                renderPhotoGrid();
+                
+                if (data.hasMore) {
+                    document.getElementById('photo-load-more').classList.remove('hidden');
+                } else {
+                    document.getElementById('photo-load-more').classList.add('hidden');
+                }
+            } catch (err) {
+                console.error('Failed to load photos:', err);
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-20">
+                        <svg class="w-16 h-16 mx-auto text-red-400/50 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <p class="text-red-400">Failed to load photos</p>
+                        <button onclick="loadPhotos()" class="mt-4 px-4 py-2 rounded-lg bg-slate-800 text-white text-sm">Retry</button>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderPhotoGrid() {
+            const grid = document.getElementById('photo-grid');
+            if (!grid) return;
+            
+            if (photoData.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-20">
+                        <svg class="w-16 h-16 mx-auto text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <p class="text-slate-400">No photos found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const isLarge = photoView === 'large';
+            const gridClass = isLarge 
+                ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4' 
+                : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4';
+            
+            grid.className = gridClass;
+            grid.style.minHeight = '400px';
+            grid.innerHTML = photoData.map(photo => renderPhotoCard(photo, isLarge)).join('');
+        }
+        
+        function renderPhotoCard(photo, isLarge) {
+            const hasNoTags = !photo.tags || photo.tags.length === 0;
+            const ext = photo.name.split('.').pop()?.toUpperCase();
+            
+            return `
+                <div class="group relative rounded-xl overflow-hidden bg-slate-800/50 border border-white/5 hover:border-meaux-cyan/30 transition-all cursor-pointer ${isLarge ? 'aspect-video' : 'aspect-square'}" onclick="openPhotoModal('${photo.key}')">
+                    <img 
+                        src="${API_BASE}${photo.url}" 
+                        alt="${photo.title || photo.name}"
+                        loading="lazy"
+                        class="w-full h-full object-cover transition-transform group-hover:scale-105"
+                        onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMxZTI5M2IiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzY0NzQ4YiIgZm9udC1zaXplPSIxNiI+Tm8gUHJldmlldzwvdGV4dD48L3N2Zz4='"
+                    >
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <p class="text-white text-sm font-medium truncate">${photo.title || photo.name}</p>
+                        <p class="text-slate-400 text-xs">${formatPhotoSize(photo.size)}</p>
+                    </div>
+                    ${hasNoTags ? `<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-400 animate-pulse" title="Untagged"></div>` : ''}
+                    <div class="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold bg-black/50 text-white">${ext}</div>
+                </div>
+            `;
+        }
+        
+        function formatPhotoSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+        
+        function filterPhotos(filter) {
+            photoFilter = filter;
+            ['all', 'untagged', 'tagged'].forEach(f => {
+                const btn = document.getElementById(`photo-filter-${f}`);
+                if (btn) {
+                    if (f === filter) {
+                        btn.className = 'px-3 py-1.5 rounded-lg bg-meaux-cyan/10 text-meaux-cyan text-sm font-medium transition-colors';
+                    } else {
+                        btn.className = 'px-3 py-1.5 rounded-lg hover:bg-slate-800/50 text-slate-400 text-sm font-medium transition-colors';
+                    }
+                }
+            });
+            loadPhotos();
+        }
+        
+        function sortPhotos() {
+            const sortVal = document.getElementById('photo-sort').value;
+            photoData.sort((a, b) => {
+                switch (sortVal) {
+                    case 'newest': return new Date(b.uploaded) - new Date(a.uploaded);
+                    case 'oldest': return new Date(a.uploaded) - new Date(b.uploaded);
+                    case 'largest': return b.size - a.size;
+                    case 'name': return a.name.localeCompare(b.name);
+                    default: return 0;
+                }
+            });
+            renderPhotoGrid();
+        }
+        
+        function setPhotoView(view) {
+            photoView = view;
+            ['grid', 'large'].forEach(v => {
+                const btn = document.getElementById(`photo-view-${v}`);
+                if (btn) {
+                    if (v === view) {
+                        btn.className = 'p-2 bg-meaux-cyan/10 text-meaux-cyan';
+                    } else {
+                        btn.className = 'p-2 hover:bg-slate-800/50 text-slate-400';
+                    }
+                }
+            });
+            renderPhotoGrid();
+        }
+        
+        async function loadMorePhotos() {
+            if (!photoCursor) return;
+            
+            try {
+                const filterParam = photoFilter !== 'all' ? `&filter=${photoFilter}` : '';
+                const res = await fetch(`${API_BASE}/api/photos/list?limit=100&cursor=${photoCursor}${filterParam}`);
+                const data = await res.json();
+                
+                photoData = [...photoData, ...data.photos];
+                photoCursor = data.cursor;
+                
+                renderPhotoGrid();
+                
+                if (!data.hasMore) {
+                    document.getElementById('photo-load-more').classList.add('hidden');
+                }
+            } catch (err) {
+                console.error('Failed to load more photos:', err);
+            }
+        }
+        
+        function openPhotoModal(key) {
+            currentPhotoKey = key;
+            const photo = photoData.find(p => p.key === key);
+            if (!photo) return;
+            
+            document.getElementById('photo-modal-img').src = `${API_BASE}${photo.url}`;
+            document.getElementById('photo-modal-name').textContent = photo.name;
+            document.getElementById('photo-modal-size').textContent = formatPhotoSize(photo.size);
+            document.getElementById('photo-modal-date').textContent = new Date(photo.uploaded).toLocaleDateString();
+            document.getElementById('photo-modal-title').value = photo.title || '';
+            document.getElementById('photo-modal-tags').value = (photo.tags || []).join(', ');
+            
+            document.getElementById('photo-modal').classList.remove('hidden');
+        }
+        
+        function closePhotoModal() {
+            document.getElementById('photo-modal').classList.add('hidden');
+            currentPhotoKey = null;
+        }
+        
+        async function savePhotoMeta() {
+            if (!currentPhotoKey) return;
+            
+            const title = document.getElementById('photo-modal-title').value;
+            const tagsStr = document.getElementById('photo-modal-tags').value;
+            const tags = tagsStr.split(',').map(t => t.trim()).filter(t => t);
+            
+            try {
+                await fetch(`${API_BASE}/api/photos/meta`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: currentPhotoKey, title, tags })
+                });
+                
+                // Update local data
+                const idx = photoData.findIndex(p => p.key === currentPhotoKey);
+                if (idx !== -1) {
+                    photoData[idx].title = title;
+                    photoData[idx].tags = tags;
+                }
+                
+                closePhotoModal();
+                renderPhotoGrid();
+                
+                // Refresh stats
+                const statsRes = await fetch(`${API_BASE}/api/photos/stats`);
+                const stats = await statsRes.json();
+                document.getElementById('photo-untagged').textContent = stats.untaggedCount;
+            } catch (err) {
+                console.error('Failed to save meta:', err);
+                alert('Failed to save. Please try again.');
+            }
+        }
+        
+        function downloadCurrentPhoto() {
+            if (!currentPhotoKey) return;
+            const photo = photoData.find(p => p.key === currentPhotoKey);
+            if (!photo) return;
+            
+            const a = document.createElement('a');
+            a.href = `${API_BASE}${photo.url}`;
+            a.download = photo.name;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        
+        async function deleteCurrentPhoto() {
+            if (!currentPhotoKey) return;
+            if (!confirm('Are you sure you want to delete this photo?')) return;
+            
+            try {
+                await fetch(`${API_BASE}/api/photos/delete/${encodeURIComponent(currentPhotoKey)}`, {
+                    method: 'DELETE'
+                });
+                
+                photoData = photoData.filter(p => p.key !== currentPhotoKey);
+                closePhotoModal();
+                renderPhotoGrid();
+                loadPhotos(); // Refresh stats
+            } catch (err) {
+                console.error('Failed to delete:', err);
+                alert('Failed to delete. Please try again.');
+            }
+        }
+        
+        async function showDuplicates() {
+            const modal = document.getElementById('duplicates-modal');
+            const list = document.getElementById('duplicates-list');
+            
+            modal.classList.remove('hidden');
+            list.innerHTML = `
+                <div class="text-center py-10">
+                    <div class="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p class="text-slate-400">Scanning for duplicates...</p>
+                </div>
+            `;
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/photos/duplicates`);
+                const data = await res.json();
+                
+                document.getElementById('dup-count').textContent = data.totalGroups;
+                document.getElementById('dup-savings').textContent = data.potentialSavings;
+                
+                if (data.duplicates.length === 0) {
+                    list.innerHTML = `
+                        <div class="text-center py-10">
+                            <svg class="w-16 h-16 mx-auto text-emerald-400/50 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <p class="text-emerald-400 font-medium">No duplicates found!</p>
+                            <p class="text-slate-500 text-sm mt-1">Your library is clean</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                list.innerHTML = data.duplicates.map((group, i) => `
+                    <div class="bg-slate-800/50 rounded-xl p-4 border border-white/5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm text-slate-400">Group ${i + 1} • ${group.sizeFormatted} each</span>
+                            <span class="text-xs text-amber-400">${group.files.length} files</span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                            ${group.files.map((file, fi) => `
+                                <div class="relative group">
+                                    <img 
+                                        src="${API_BASE}/api/photos/image/${encodeURIComponent(file.key)}" 
+                                        alt="${file.name}"
+                                        class="w-full aspect-square object-cover rounded-lg"
+                                        onerror="this.parentElement.innerHTML='<div class=\\'w-full aspect-square bg-slate-700 rounded-lg flex items-center justify-center text-slate-500 text-xs\\'>No preview</div>'"
+                                    >
+                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                                        ${fi > 0 ? `<button onclick="deleteDuplicate('${file.key}')" class="p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30" title="Delete this copy">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>` : `<span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded text-xs font-medium">Keep</span>`}
+                                    </div>
+                                    <p class="mt-1 text-xs text-slate-500 truncate" title="${file.name}">${file.name}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Failed to find duplicates:', err);
+                list.innerHTML = `
+                    <div class="text-center py-10 text-red-400">
+                        <p>Failed to scan for duplicates</p>
+                        <button onclick="showDuplicates()" class="mt-2 px-4 py-2 rounded-lg bg-slate-800 text-white text-sm">Retry</button>
+                    </div>
+                `;
+            }
+        }
+        
+        function closeDuplicatesModal() {
+            document.getElementById('duplicates-modal').classList.add('hidden');
+        }
+        
+        async function deleteDuplicate(key) {
+            if (!confirm('Delete this duplicate?')) return;
+            
+            try {
+                await fetch(`${API_BASE}/api/photos/delete/${encodeURIComponent(key)}`, {
+                    method: 'DELETE'
+                });
+                
+                // Refresh duplicates view
+                showDuplicates();
+            } catch (err) {
+                console.error('Failed to delete duplicate:', err);
+                alert('Failed to delete. Please try again.');
+            }
+        }
+        
+        async function scanAllPhotos() {
+            const btn = event.target.closest('button');
+            btn.disabled = true;
+            btn.innerHTML = `
+                <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Scanning...
+            `;
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/photos/scan`);
+                const data = await res.json();
+                
+                alert(`Scan Complete!\n\n📷 ${data.totalImages} images found\n📁 ${data.folderBreakdown.length} folders\n⚠️ ${data.potentialDuplicates} potential duplicate groups\n💾 Total size: ${(data.totalSize / 1024 / 1024).toFixed(1)} MB`);
+                
+                loadPhotos();
+            } catch (err) {
+                console.error('Failed to scan:', err);
+                alert('Scan failed. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Scan Library
+                `;
+            }
         }
 
         function renderHTML() {
